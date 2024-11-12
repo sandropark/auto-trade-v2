@@ -1,35 +1,20 @@
 import yaml
-
 import json
 import requests
-
 from datetime import datetime, timedelta
 from pytz import timezone
-
 import KIS_API_Helper_US as KisUS
 import KIS_API_Helper_KR as KisKR
-
 import time
-
-
-
 import FinanceDataReader as fdr
 import pandas_datareader.data as web
-
-# pip3 install pandas-datareader
-# pip3 install -U finance-datareader
-
-
 import pandas as pd
-
+from env_type import EnvType
 
 stock_info = None
 
-#설정 파일 정보를 읽어 옵니다.
-with open('/var/autobot/myStockInfo.yaml', encoding='UTF-8') as f:
+with open('../config/hantu-stock-config.yml', encoding='UTF-8') as f:
     stock_info = yaml.load(f, Loader=yaml.FullLoader)
-    
-    
 
 ############################################################################################################################################################
 NOW_DIST = ""
@@ -42,24 +27,19 @@ def SetChangeMode(dist = "REAL"):
 
 #현재 선택된 계좌정보를 리턴!
 def GetNowDist():
-    global NOW_DIST 
+    global NOW_DIST
     return NOW_DIST
 
 ############################################################################################################################################################
 
 #앱 키를 반환하는 함수
-def GetAppKey(dist = "REAL"):
-    
+def GetAppKey(dist: EnvType = EnvType.R):
     global stock_info
     
-    key = ""
-    
-    if dist == "REAL":
-        key = "REAL_APP_KEY"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_APP_KEY"
+    if dist == EnvType.V:
+        return stock_info['virtual']['app-key']
         
-    return stock_info[key]
+    return stock_info['real']['app-key']
 
 
 #앱시크릿을 리턴!

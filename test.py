@@ -1,6 +1,7 @@
-import KIS_Common as Common
-import KIS_API_Helper_US as KisUS
-import KIS_API_Helper_KR as KisKR
+import yaml
+from common import KIS_Common as Common
+# from common import KIS_API_Helper_US as KisUS
+# from common import KIS_API_Helper_KR as KisKR
 
 import pprint
 import time
@@ -8,15 +9,18 @@ import time
 #통합증거금을 사용하시는 분은 강의 영상을 잘 봐주세요!!
 
 #REAL 실계좌 VIRTUAL 모의 계좌
-Common.SetChangeMode("REAL") 
+# Common.SetChangeMode("REAL") 
 
 
 #현재 장이 열렸는지 여부
-if KisUS.IsMarketOpen() == True:
-    print("Maket is Open!!")
-else:
-    print("Maket is Closed!!")
+# if KisUS.IsMarketOpen() == True:
+#     print("Maket is Open!!")
+# else:
+#     print("Maket is Closed!!")
 
+app_key = Common.GetAppKey()
+
+print(app_key)
 
 '''
 
@@ -123,7 +127,7 @@ pprint.pprint(Common.GetOhlcv2("US","AAPL"))
 
 
 
-pprint.pprint(Common.GetOhlcv("KR","005930"))
-pprint.pprint(Common.GetOhlcv("US","TQQQ"))
+# pprint.pprint(Common.GetOhlcv("KR","005930"))
+# pprint.pprint(Common.GetOhlcv("US","TQQQ"))
 
 
