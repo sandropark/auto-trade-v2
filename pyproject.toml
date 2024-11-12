@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "stock-trade"
+version = "0.1.0"
+description = ""
+authors = ["sandropark <ticoba@naver.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+pykrx = "^1.0.48"
+pyyaml = "^6.0.2"
+pandas = "^2.2.3"
+finance-datareader = "^0.9.94"
+pandas-datareader = "^0.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
