@@ -699,7 +699,7 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt = False):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
 
     
@@ -754,7 +754,7 @@ def MakeSellLimitOrderOri(stockcode, amt, price, market):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -824,7 +824,7 @@ def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
 
     
@@ -883,7 +883,7 @@ def MakeSellLimitOrder(stockcode, amt, price):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1106,8 +1106,8 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
         "CANO": common.get_account_no(common.get_now_dist()),
         "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "PDNO": stockcode,
-        "ORD_STRT_DT": common.GetFromNowDateStr("US","NONE", -limit),
-        "ORD_END_DT": common.GetNowDateStr("US"),
+        "ORD_STRT_DT": common.get_from_now_date_str("US","NONE", -limit),
+        "ORD_END_DT": common.get_now_date_str("US"),
         "SLL_BUY_DVSN": sell_buy_code,
         "CCLD_NCCS_DVSN": status_code,
         "OVRS_EXCG_CD": "",
@@ -1126,7 +1126,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(params)
+        "hashkey" : common.get_hash_key(params)
     }
 
     res = requests.get(URL, headers=headers, params=params) 
@@ -1167,9 +1167,9 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
             '''
             #주문정보 날짜가 다르다.
-            if common.GetNowDateStr("KR") != order['ord_dt']: 
+            if common.get_now_date_str("KR") != order['ord_dt']: 
                 #그런데 전날이다!
-                if common.GetFromNowDateStr("KR","NONE",-1) == order['ord_dt']:
+                if common.get_from_now_date_str("KR","NONE",-1) == order['ord_dt']:
                     if int(order['ord_tmd']) < 203000: #10시30분00초 보다 작다
                         OrderInfo["OrderSatus"] = "Close"     
                 else:
@@ -1291,7 +1291,7 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1331,7 +1331,7 @@ def CancelAllOrders(stockcode = "", side = "ALL"):
  
 
 #p_code -> D:일, W:주, M:월 
-def GetOhlcv(stock_code, p_code, adj_ok = "1"):
+def get_ohlcv(stock_code, p_code, adj_ok = "1"):
 
     time.sleep(0.2)
     
@@ -1352,7 +1352,7 @@ def GetOhlcv(stock_code, p_code, adj_ok = "1"):
             "tr_id":"HHDFS76240000"
             }
 
-    date_str = common.GetNowDateStr("US")
+    date_str = common.get_now_date_str("US")
     
     params = {
         "AUTH": "",
@@ -1447,7 +1447,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
     count = 0
     request_count = 0
 
-    date_str = common.GetNowDateStr("US")
+    date_str = common.get_now_date_str("US")
 
 
 
@@ -1473,7 +1473,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
         
 
         #if request_count > 0:
-        #    date_str = common.GetFromNowDateStr("US","NONE",-150*request_count)
+        #    date_str = common.get_from_now_date_str("US","NONE",-150*request_count)
 
         
         params = {

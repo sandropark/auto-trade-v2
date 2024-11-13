@@ -126,7 +126,7 @@ else:
 # 통합 증거금 계좌 사용시 수정된 부분 #
 ###############################
 #계좌 잔고를 가지고 온다!
-Balance = Common.GetBalanceKrwTotal()
+Balance = Common.get_balance_krw_total()
 
 
 
@@ -275,11 +275,11 @@ for stock_info in MyPortfolioList:
     
     ##################################################################
     #일봉 정보를 가지고 온다
-    df = Common.GetOhlcv("US",stock_code,500)
+    df = Common.get_ohlcv("US",stock_code,500)
     pprint.pprint(df)
 
     #1달을 20일 거래일이라 치고 10을 곱해 10개월치의 이평선의 현재 값을 구한다.
-    Ma10Month = Common.GetMA(df,(20*10),-1)
+    Ma10Month = Common.get_ma(df,(20*10),-1)
     print("Ma10Month: ", Ma10Month)
 
     #현재가가 10개월 이평선보다 위에 있는지 여부

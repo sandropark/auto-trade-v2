@@ -123,7 +123,7 @@ else:
 # 통합 증거금 계좌 사용시 수정된 부분 #
 ###############################
 #계좌 잔고를 가지고 온다!
-Balance = Common.GetBalanceKrwTotal()
+Balance = Common.get_balance_krw_total()
 
 
 print("--------------내 보유 잔고---------------------")

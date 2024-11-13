@@ -125,7 +125,7 @@ def get_token():
 
 ############################################################################################################################################################
 #해시키를 리턴한다!
-def GetHashKey(datas):
+def get_hash_key(datas):
     PATH = "uapi/hashkey"
     URL = f"{get_url_base(NOW_DIST)}/{PATH}"
 
@@ -145,7 +145,7 @@ def GetHashKey(datas):
 
 ############################################################################################################################################################
 #한국인지 미국인지 구분해 현재 날짜정보를 리턴해 줍니다!
-def GetNowDateStr(area = "KR", type= "NONE" ):
+def get_now_date_str(area = "KR", type= "NONE" ):
     timezone_info = timezone('Asia/Seoul')
     if area == "US":
         timezone_info = timezone('America/New_York')
@@ -157,7 +157,7 @@ def GetNowDateStr(area = "KR", type= "NONE" ):
         return now.strftime("%Y-%m-%d")
 
 #현재날짜에서 이전/이후 날짜를 구해서 리턴! (미래의 날짜를 구할 일은 없겠지만..)
-def GetFromNowDateStr(area = "KR", type= "NONE" , days=100):
+def get_from_now_date_str(area = "KR", type= "NONE" , days=100):
     timezone_info = timezone('Asia/Seoul')
     if area == "US":
         timezone_info = timezone('America/New_York')
@@ -176,7 +176,7 @@ def GetFromNowDateStr(area = "KR", type= "NONE" , days=100):
 ############################################################################################################################################################
 
 #통합 증거금 사용시 잔고 확인!
-def GetBalanceKrwTotal():
+def get_balance_krw_total():
     kr_data = kis_kr.GetBalance()
     us_data = kis_us.GetBalance("KRW")
 
@@ -194,7 +194,7 @@ def GetBalanceKrwTotal():
 
 ############################################################################################################################################################
 #OHLCV 값을 한국투자증권 혹은 FinanceDataReader 혹은 야후 파이낸스에서 가지고 옴!
-def GetOhlcv(area, stock_code, limit = 500):
+def get_ohlcv(area, stock_code, limit = 500):
 
     Adjlimit = limit * 1.7 #주말을 감안하면 5개를 가져오려면 적어도 7개는 뒤져야 된다. 1.4가 이상적이지만 혹시 모를 연속 공휴일 있을지 모르므로 1.7로 보정해준다
 
@@ -207,7 +207,7 @@ def GetOhlcv(area, stock_code, limit = 500):
         if area == "US":
 
             print("----First try----")
-            df = kis_us.GetOhlcv(stock_code,"D")
+            df = kis_us.get_ohlcv(stock_code,"D")
 
             #한투에서 100개 이상 못가져 오니깐 그 이상은 아래 로직을 탄다. 혹은 없는 종목이라면 역시 아래 로직을 탄다
             if Adjlimit > 100 or len(df) == 0:
@@ -216,19 +216,19 @@ def GetOhlcv(area, stock_code, limit = 500):
                 except_riase = False
                 try:
                     print("----Second try----")
-                    df = GetOhlcv2(area,stock_code,Adjlimit)
+                    df = get_ohlcv2(area,stock_code,Adjlimit)
                 except Exception as e:
                     except_riase = True
                     
                 if except_riase == True:
                     print("----Third try----")
-                    df = GetOhlcv1(area,stock_code,Adjlimit)
+                    df = get_ohlcv1(area,stock_code,Adjlimit)
 
         
         else:
 
             print("----First try----")
-            df = kis_kr.GetOhlcv(stock_code,"D")
+            df = kis_kr.get_ohlcv(stock_code,"D")
             
 
             #한투에서 100개 이상 못가져 오니깐 그 이상은 아래 로직을 탄다. 혹은 없는 종목이라면 역시 아래 로직을 탄다
@@ -238,13 +238,13 @@ def GetOhlcv(area, stock_code, limit = 500):
                 except_riase = False
                 try:
                     print("----Second try----")
-                    df = GetOhlcv1(area,stock_code,Adjlimit)
+                    df = get_ohlcv1(area,stock_code,Adjlimit)
                 except Exception as e:
                     except_riase = True
                     
                 if except_riase == True:
                     print("----Third try----")
-                    df = GetOhlcv2(area,stock_code,Adjlimit)
+                    df = get_ohlcv2(area,stock_code,Adjlimit)
 
 
     except Exception as e:
@@ -260,9 +260,9 @@ def GetOhlcv(area, stock_code, limit = 500):
 
 #한국 주식은 KRX 정보데이터시스템에서 가져온다. 그런데 미국주식 크롤링의 경우 investing.com 에서 가져오는데 안전하게 2초 정도 쉬어야 한다!
 # https://financedata.github.io/posts/finance-data-reader-users-guide.html
-def GetOhlcv1(area, stock_code, limit = 500):
+def get_ohlcv1(area, stock_code, limit = 500):
 
-    df = fdr.DataReader(stock_code,GetFromNowDateStr(area,"BAR",-limit),GetNowDateStr(area,"BAR"))
+    df = fdr.DataReader(stock_code,get_from_now_date_str(area,"BAR",-limit),get_now_date_str(area,"BAR"))
 
     df = df[[ 'Open', 'High', 'Low', 'Close', 'Volume']]
     df.columns = [ 'open', 'high', 'low', 'close', 'volume']
@@ -287,7 +287,7 @@ def GetOhlcv1(area, stock_code, limit = 500):
 
 #야후 파이낸스에서 정보 가져오기! 
 # https://pandas-datareader.readthedocs.io/en/latest/
-def GetOhlcv2(area, stock_code, limit = 500):
+def get_ohlcv2(area, stock_code, limit = 500):
 
     df = None
 
@@ -295,18 +295,18 @@ def GetOhlcv2(area, stock_code, limit = 500):
 
         except_riase = False
         try:
-            df = web.DataReader(stock_code + ".KS", "yahoo", GetFromNowDateStr(area,"BAR",-limit),GetNowDateStr(area,"BAR"))
+            df = web.DataReader(stock_code + ".KS", "yahoo", get_from_now_date_str(area,"BAR",-limit),get_now_date_str(area,"BAR"))
         except Exception as e:
             except_riase = True
 
         if except_riase == True:
             try:
-                df = web.DataReader(stock_code + ".KQ", "yahoo", GetFromNowDateStr(area,"BAR",-limit),GetNowDateStr(area,"BAR"))
+                df = web.DataReader(stock_code + ".KQ", "yahoo", get_from_now_date_str(area,"BAR",-limit),get_now_date_str(area,"BAR"))
             except Exception as e:
                 print("")
 
     else:
-        df = web.DataReader(stock_code, "yahoo", GetFromNowDateStr(area,"BAR",-limit),GetNowDateStr(area,"BAR"))
+        df = web.DataReader(stock_code, "yahoo", get_from_now_date_str(area,"BAR",-limit),get_now_date_str(area,"BAR"))
 
 
 
@@ -332,7 +332,7 @@ def GetOhlcv2(area, stock_code, limit = 500):
 ############################################################################################################################################################
 
 #이동평균선 수치를 구해준다 첫번째: 일봉 정보, 두번째: 기간, 세번째: 기준 날짜
-def GetMA(ohlcv,period,st):
+def get_ma(ohlcv,period,st):
     close = ohlcv["close"]
     ma = close.rolling(period).mean()
     return float(ma.iloc[st])

@@ -588,8 +588,8 @@ def GetStockName(stock_code):
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR","NONE",-7),
-        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.get_from_now_date_str("KR","NONE",-7),
+        "FID_INPUT_DATE_2": common.get_now_date_str("KR"),
         "FID_PERIOD_DIV_CODE": 'D',
         "FID_ORG_ADJ_PRC": "0"
     }
@@ -735,7 +735,7 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt = False):
             "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : common.GetHashKey(data)
+            "hashkey" : common.get_hash_key(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -794,7 +794,7 @@ def MakeSellMarketOrder(stockcode, amt):
             "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":TrId,
             "custtype":"P",
-            "hashkey" : common.GetHashKey(data)
+            "hashkey" : common.get_hash_key(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -862,7 +862,7 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt = False, ErrLog = "NO"):
             "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : common.GetHashKey(data)
+            "hashkey" : common.get_hash_key(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -921,7 +921,7 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
             "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":TrId,
             "custtype":"P",
-            "hashkey" : common.GetHashKey(data)
+            "hashkey" : common.get_hash_key(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
         
@@ -995,7 +995,7 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1051,7 +1051,7 @@ def MakeSellMarketOrderIRP(stockcode, amt):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1108,7 +1108,7 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1164,7 +1164,7 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1387,8 +1387,8 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     params = {
         "CANO": common.get_account_no(common.get_now_dist()),
         "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
-        "INQR_STRT_DT": common.GetFromNowDateStr("KR","NONE", -limit),
-        "INQR_END_DT": common.GetNowDateStr("KR"),
+        "INQR_STRT_DT": common.get_from_now_date_str("KR","NONE", -limit),
+        "INQR_END_DT": common.get_now_date_str("KR"),
         "SLL_BUY_DVSN_CD": sell_buy_code,
         "INQR_DVSN": "00",
         "PDNO": stockcode,
@@ -1409,7 +1409,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(params)
+        "hashkey" : common.get_hash_key(params)
     }
 
     res = requests.get(URL, headers=headers, params=params) 
@@ -1451,7 +1451,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
 
 
-            if common.GetNowDateStr("KR") != order['ord_dt']: 
+            if common.get_now_date_str("KR") != order['ord_dt']: 
                 OrderInfo["OrderSatus"] = "Close"     
 
 
@@ -1567,7 +1567,7 @@ def CancelModifyOrder(stockcode, order_num1 , order_num2 , order_amt , order_pri
             "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : common.GetHashKey(data)
+            "hashkey" : common.get_hash_key(data)
         }
 
         res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1641,7 +1641,7 @@ def CancelModifyOrderIRP(stockcode, order_num1 , order_num2 , order_amt , order_
         "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : common.GetHashKey(data)
+        "hashkey" : common.get_hash_key(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1704,7 +1704,7 @@ def GetMarketOrderPrice(stockcode,ResultOrder):
 ############################################################################################################################################################
     
 #p_code -> D:일, W:주, M:월, Y:년
-def GetOhlcv(stock_code,p_code, adj_ok = "1"):
+def get_ohlcv(stock_code,p_code, adj_ok = "1"):
 
     time.sleep(0.2)
 
@@ -1728,8 +1728,8 @@ def GetOhlcv(stock_code,p_code, adj_ok = "1"):
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR","NONE",-36500),
-        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.get_from_now_date_str("KR","NONE",-36500),
+        "FID_INPUT_DATE_2": common.get_now_date_str("KR"),
         "FID_PERIOD_DIV_CODE": p_code,
         "FID_ORG_ADJ_PRC": FID_ORG_ADJ_PRC
     }
@@ -1813,7 +1813,7 @@ def GetOhlcvNew(stock_code,p_code,get_count, adj_ok = "1"):
     count = 0
  
 
-    now_date = common.GetNowDateStr("KR")
+    now_date = common.get_now_date_str("KR")
     date_str_start = common.GetFromDateStr(pd.to_datetime(now_date),"NONE",-100)
     date_str_end = now_date
 
@@ -1985,7 +1985,7 @@ def GetETF_Nav(stock_code,Log = "N"):
         try:
 
                     
-            df = stock.get_etf_price_deviation(common.GetFromNowDateStr("KR","NONE", -5), common.GetNowDateStr("KR"), stock_code)
+            df = stock.get_etf_price_deviation(common.get_from_now_date_str("KR","NONE", -5), common.get_now_date_str("KR"), stock_code)
 
 
             if Log == 'Y':
@@ -2016,7 +2016,7 @@ def GetETFGapAvg(stock_code, Log = "N"):
 
     #pykrx 모듈 통해서 괴리율 평균을 구해옴!!!
     try:
-        df = stock.get_etf_price_deviation(common.GetFromNowDateStr("KR","NONE", -120), common.GetNowDateStr("KR"), stock_code)
+        df = stock.get_etf_price_deviation(common.get_from_now_date_str("KR","NONE", -120), common.get_now_date_str("KR"), stock_code)
         if Log == 'Y':
             pprint.pprint(df)
         if len(df) == 0:
