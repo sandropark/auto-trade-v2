@@ -87,9 +87,9 @@ else:
 
 
 # 마켓이 열렸는지 여부~!
-IsMarketOpen = KisKR.IsMarketOpen()
+is_market_open = KisKR.is_market_open()
 
-if IsMarketOpen == True:
+if is_market_open == True:
     print("Market Is Open!!!!!!!!!!!")
     # 영상엔 없지만 리밸런싱이 가능할때만 내게 메시지를 보내자!
     if Is_Rebalance_Go == True:
@@ -113,7 +113,7 @@ else:
 #####################################################################################################################################
 
 # 계좌 잔고를 가지고 온다!
-Balance = KisKR.GetBalance()
+Balance = KisKR.get_balance()
 #####################################################################################################################################
 
 """-------통합 증거금 사용자는 아래 코드도 사용할 수 있습니다! -----------"""
@@ -212,7 +212,7 @@ for stock_info in MyPortfolioList:
     stock_target_rate = float(stock_info['stock_target_rate']) / 100.0
 
     #현재가!
-    CurrentPrice = KisKR.GetCurrentPrice(stock_code)
+    CurrentPrice = KisKR.get_current_price(stock_code)
 
 
     #비중대로 매수할 총 금액을 계산한다 
@@ -229,7 +229,7 @@ for stock_info in MyPortfolioList:
 
 print("--------------내 보유 주식---------------------")
 # 그리고 현재 이 계좌에서 보유한 주식 리스트를 가지고 옵니다!
-MyStockList = KisKR.GetMyStockList()
+MyStockList = KisKR.get_my_stock_list()
 pprint.pprint(MyStockList)
 print("--------------------------------------------")
 ##########################################################
@@ -250,7 +250,7 @@ for stock_info in MyPortfolioList:
     stock_target_rate = float(stock_info["stock_target_rate"]) / 100.0
 
     # 현재가!
-    CurrentPrice = KisKR.GetCurrentPrice(stock_code)
+    CurrentPrice = KisKR.get_current_price(stock_code)
 
     ##################################################################
     # 일봉 정보를 가지고 온다
@@ -292,7 +292,7 @@ for stock_info in MyPortfolioList:
 
             break
 
-    print("#####", KisKR.GetStockName(stock_code), " stock_code: ", stock_code)
+    print("#####", KisKR.get_stock_name(stock_code), " stock_code: ", stock_code)
     print("---> TargetRate:", round(stock_target_rate * 100.0, 2), "%")
 
     # 주식의 총 평가금액을 더해준다
@@ -370,7 +370,7 @@ for stock_info in MyPortfolioList:
     # 라인 메시지랑 로그를 만들기 위한 문자열
     line_data = (
         ">> "
-        + KisKR.GetStockName(stock_code)
+        + KisKR.get_stock_name(stock_code)
         + "("
         + stock_code
         + ") << \n비중: "
@@ -427,7 +427,7 @@ print("--------------------------------------------")
 
 
 # 리밸런싱이 가능한 상태여야 하고 매수 매도는 장이 열려있어야지만 가능하다!!!
-if Is_Rebalance_Go == True and IsMarketOpen == True:
+if Is_Rebalance_Go == True and is_market_open == True:
 
     line_alert.SendMessage(PortfolioName + " (" + strYM + ") 리밸런싱 시작!!")
 
@@ -449,10 +449,10 @@ if Is_Rebalance_Go == True and IsMarketOpen == True:
         if rebalance_amt < 0:
 
             # 일반계좌 개인연금(저축)계좌에서는 이 함수를 사용합니다
-            pprint.pprint(KisKR.MakeSellMarketOrder(stock_code, abs(rebalance_amt)))
+            pprint.pprint(KisKR.make_sell_market_order(stock_code, abs(rebalance_amt)))
 
             # 퇴직연금 IRP 계좌에서는 아래 함수를 사용합니다.
-            # pprint.pprint(KisKR.MakeSellMarketOrderIRP(stock_code,abs(rebalance_amt)))
+            # pprint.pprint(KisKR.make_sell_market_order_IRP(stock_code,abs(rebalance_amt)))
 
     print("--------------------------------------------")
 
@@ -471,10 +471,10 @@ if Is_Rebalance_Go == True and IsMarketOpen == True:
         if rebalance_amt > 0:
 
             # 일반계좌 개인연금(저축)계좌에서는 이 함수를 사용합니다
-            pprint.pprint(KisKR.MakeBuyMarketOrder(stock_code, rebalance_amt))
+            pprint.pprint(KisKR.make_buy_market_order(stock_code, rebalance_amt))
 
             # 퇴직연금 IRP 계좌에서는 아래 함수를 사용합니다.
-            # pprint.pprint(KisKR.MakeBuyMarketOrderIRP(stock_code,rebalance_amt))
+            # pprint.pprint(KisKR.make_buy_market_order_IRP(stock_code,rebalance_amt))
 
     print("--------------------------------------------")
 

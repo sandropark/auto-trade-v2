@@ -88,9 +88,9 @@ else:
 
 
 # 마켓이 열렸는지 여부~!
-IsMarketOpen = KisUS.IsMarketOpen()
+is_market_open = KisUS.is_market_open()
 
-if IsMarketOpen == True:
+if is_market_open == True:
     print("Market Is Open!!!!!!!!!!!")
     # 영상엔 없지만 리밸런싱이 가능할때만 내게 메시지를 보내자!
     if Is_Rebalance_Go == True:
@@ -112,7 +112,7 @@ else:
 
 
 # 계좌 잔고를 가지고 온다!
-Balance = KisUS.GetBalance()
+Balance = KisUS.get_balance()
 
 
 print("--------------내 보유 잔고---------------------")
@@ -239,7 +239,7 @@ for stock_info in MyPortfolioList:
     stock_target_rate = float(stock_info['stock_target_rate']) / 100.0
 
     #현재가!
-    CurrentPrice = KisUS.GetCurrentPrice(stock_code)
+    CurrentPrice = KisUS.get_current_price(stock_code)
 
 
     #비중대로 매수할 총 금액을 계산한다 
@@ -256,7 +256,7 @@ for stock_info in MyPortfolioList:
 
 print("--------------내 보유 주식---------------------")
 # 그리고 현재 이 계좌에서 보유한 주식 리스트를 가지고 옵니다!
-MyStockList = KisUS.GetMyStockList()
+MyStockList = KisUS.get_my_stock_list()
 pprint.pprint(MyStockList)
 print("--------------------------------------------")
 ##########################################################
@@ -277,7 +277,7 @@ for stock_info in MyPortfolioList:
     stock_target_rate = float(stock_info["stock_target_rate"]) / 100.0
 
     # 현재가!
-    CurrentPrice = KisUS.GetCurrentPrice(stock_code)
+    CurrentPrice = KisUS.get_current_price(stock_code)
 
     stock_name = ""
     stock_amt = 0  # 수량
@@ -417,7 +417,7 @@ print("--------------------------------------------")
 
 
 # 리밸런싱이 가능한 상태여야 하고 매수 매도는 장이 열려있어야지만 가능하다!!!
-if Is_Rebalance_Go == True and IsMarketOpen == True:
+if Is_Rebalance_Go == True and is_market_open == True:
 
     line_alert.SendMessage(PortfolioName + " (" + strYM + ") 리밸런싱 시작!!")
 
@@ -439,12 +439,14 @@ if Is_Rebalance_Go == True and IsMarketOpen == True:
         if rebalance_amt < 0:
 
             # 현재가!
-            CurrentPrice = KisUS.GetCurrentPrice(stock_code)
+            CurrentPrice = KisUS.get_current_price(stock_code)
 
             # 현재가보다 아래에 매도 주문을 넣음으로써 시장가로 매도
             CurrentPrice *= 0.9
             pprint.pprint(
-                KisUS.MakeSellLimitOrder(stock_code, abs(rebalance_amt), CurrentPrice)
+                KisUS.make_sell_limit_order(
+                    stock_code, abs(rebalance_amt), CurrentPrice
+                )
             )
 
     print("--------------------------------------------")
@@ -464,12 +466,12 @@ if Is_Rebalance_Go == True and IsMarketOpen == True:
         if rebalance_amt > 0:
 
             # 현재가!
-            CurrentPrice = KisUS.GetCurrentPrice(stock_code)
+            CurrentPrice = KisUS.get_current_price(stock_code)
 
             # 현재가보다 위에 매수 주문을 넣음으로써 시장가로 매수
             CurrentPrice *= 1.1
             pprint.pprint(
-                KisUS.MakeBuyLimitOrder(stock_code, rebalance_amt, CurrentPrice)
+                KisUS.make_buy_limit_order(stock_code, rebalance_amt, CurrentPrice)
             )
 
     print("--------------------------------------------")

@@ -46,7 +46,7 @@ from pykrx import stock
 
 
 # 오늘 개장일인지 조회! (휴장일이면 'N'을 리턴!)
-def IsTodayOpenCheck():
+def is_today_open_check():
     time.sleep(0.2)
 
     now_time = datetime.now(timezone("Asia/Seoul"))
@@ -87,7 +87,7 @@ def IsTodayOpenCheck():
 
 
 # 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
-def IsMarketOpen():
+def is_market_open():
     now_time = datetime.now(timezone("Asia/Seoul"))
     pprint.pprint(now_time)
 
@@ -118,18 +118,18 @@ def IsMarketOpen():
             if common.get_now_dist() == "VIRTUAL":
 
                 common.set_change_mode("REAL")
-                result = MakeSellLimitOrder("069500", 1, 1, "CHECK")
+                result = make_sell_limit_order("069500", 1, 1, "CHECK")
                 common.set_change_mode("VIRTUAL")
 
             else:
-                result = MakeSellLimitOrder("069500", 1, 1, "CHECK")
+                result = make_sell_limit_order("069500", 1, 1, "CHECK")
 
         except Exception as e:
             common.set_change_mode(NowDist)
             print("EXCEPTION ", e)
 
         # 장운영시간이 아니라고 리턴되면 장이 닫힌거다!
-        if result == "APBK0918" or result == "APBK0919" or IsTodayOpenCheck() == "N":
+        if result == "APBK0918" or result == "APBK0919" or is_today_open_check() == "N":
             print("Market is Close!!")
 
             return False
@@ -150,16 +150,16 @@ def IsMarketOpen():
 
 
 # price_pricision 호가 단위에 맞게 변형해준다. 지정가 매매시 사용
-def PriceAdjust(price, stock_code):
+def price_adjust(price, stock_code):
 
-    NowPrice = GetCurrentPrice(stock_code)
+    NowPrice = get_current_price(stock_code)
 
     price = int(price)
 
-    data = GetCurrentStatus(stock_code)
+    data = get_current_status(stock_code)
     if data["StockMarket"] == "ETF" or price <= NowPrice:
 
-        hoga = GetHoga(stock_code)
+        hoga = get_hoga(stock_code)
 
         adjust_price = math.floor(price / hoga) * hoga
 
@@ -189,11 +189,11 @@ def PriceAdjust(price, stock_code):
 
 
 # 나의 계좌 잔고!
-def GetBalance():
+def get_balance():
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return GetBalanceIRP()
+        return get_balance_IRP()
     else:
 
         time.sleep(0.2)
@@ -253,7 +253,7 @@ def GetBalance():
                 or balanceDict["TotalMoney"] == balanceDict["StockMoney"]
             ):
                 # 장이 안열린 상황을 가정
-                # if IsMarketOpen() == False:
+                # if is_market_open() == False:
                 balanceDict["TotalMoney"] = float(result["bfdy_tot_asst_evlu_amt"])
 
             # 예수금 총금액 (즉 주문가능현금)
@@ -273,7 +273,7 @@ def GetBalance():
 
 
 # 나의 계좌 잔고!
-def GetBalanceIRP():
+def get_balance_IRP():
 
     time.sleep(0.2)
 
@@ -324,7 +324,7 @@ def GetBalanceIRP():
         # 평가 손익 금액
         balanceDict["StockRevenue"] = float(result["evlu_pfls_smtl_amt"])
 
-        Data = CheckPossibleBuyInfoIRP("069500", 9140, "LIMIT")
+        Data = adjust_possible_buy_info_IRP("069500", 9140, "LIMIT")
 
         # 예수금 총금액 (즉 주문가능현금)
         balanceDict["RemainMoney"] = float(
@@ -344,7 +344,7 @@ def GetBalanceIRP():
 
 
 # 한국 보유 주식 리스트!
-def GetMyStockList():
+def get_my_stock_list():
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -466,7 +466,7 @@ def GetMyStockList():
 
 
 # 국내 주식현재가 시세
-def GetCurrentPrice(stock_code):
+def get_current_price(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
@@ -495,7 +495,7 @@ def GetCurrentPrice(stock_code):
 
 
 # 국내 주식 호가 단위!
-def GetHoga(stock_code):
+def get_hoga(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
@@ -524,7 +524,7 @@ def GetHoga(stock_code):
 
 
 # 국내 주식 이름
-def GetStockName(stock_code):
+def get_stock_name(stock_code):
     time.sleep(0.2)
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
@@ -561,7 +561,7 @@ def GetStockName(stock_code):
 
 # 퀀트 투자를 위한 함수!
 # 국내 주식 시총, PER, PBR, EPS, PBS 구해서 리턴하기!
-def GetCurrentStatus(stock_code):
+def get_current_status(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
@@ -590,7 +590,7 @@ def GetCurrentStatus(stock_code):
 
         stockDataDict = dict()
         stockDataDict["StockCode"] = stock_code
-        stockDataDict["StockName"] = GetStockName(stock_code)
+        stockDataDict["StockName"] = get_stock_name(stock_code)
         stockDataDict["StockNowPrice"] = int(result["stck_prpr"])
         stockDataDict["StockMarket"] = result[
             "rprs_mrkt_kor_name"
@@ -640,20 +640,20 @@ def GetCurrentStatus(stock_code):
 
 ############################################################################################################################################################
 # 시장가 주문하기!
-def MakeBuyMarketOrder(stockcode, amt, adjustAmt=False):
+def make_buy_market_order(stockcode, amt, adjustAmt=False):
 
     # 매수가능 수량으로 보정할지 여부
     if adjustAmt == True:
         try:
             # 매수 가능한수량으로 보정
-            amt = AdjustPossibleAmt(stockcode, amt, "MARKET")
+            amt = adjust_possible_amt(stockcode, amt, "MARKET")
 
         except Exception as e:
             print("Exception")
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return MakeBuyMarketOrderIRP(stockcode, amt)
+        return make_buy_market_order_IRP(stockcode, amt)
     else:
 
         time.sleep(0.2)
@@ -698,17 +698,17 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt=False):
             print("Error Code : " + str(res.status_code) + " | " + res.text)
 
             if res.json()["msg_cd"] == "APBK1744":
-                MakeBuyMarketOrderIRP(stockcode, amt)
+                make_buy_market_order_IRP(stockcode, amt)
 
             return res.json()["msg_cd"]
 
 
 # 시장가 매도하기!
-def MakeSellMarketOrder(stockcode, amt):
+def make_sell_market_order(stockcode, amt):
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return MakeSellMarketOrderIRP(stockcode, amt)
+        return make_sell_market_order_IRP(stockcode, amt)
     else:
 
         time.sleep(0.2)
@@ -753,26 +753,26 @@ def MakeSellMarketOrder(stockcode, amt):
             print("Error Code : " + str(res.status_code) + " | " + res.text)
 
             if res.json()["msg_cd"] == "APBK1744":
-                MakeSellMarketOrderIRP(stockcode, amt)
+                make_sell_market_order_IRP(stockcode, amt)
 
             return res.json()["msg_cd"]
 
 
 # 지정가 주문하기!
-def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
+def make_buy_limit_order(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
 
     # 매수가능 수량으로 보정할지 여부
     if adjustAmt == True:
         try:
             # 매수 가능한수량으로 보정
-            amt = AdjustPossibleAmt(stockcode, amt, "LIMIT")
+            amt = adjust_possible_amt(stockcode, amt, "LIMIT")
 
         except Exception as e:
             print("Exception")
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return MakeBuyLimitOrderIRP(stockcode, amt, price)
+        return make_buy_limit_order_IRP(stockcode, amt, price)
     else:
 
         time.sleep(0.2)
@@ -789,7 +789,7 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
-            "ORD_UNPR": str(PriceAdjust(price, stockcode)),
+            "ORD_UNPR": str(price_adjust(price, stockcode)),
         }
         headers = {
             "Content-Type": "application/json",
@@ -819,19 +819,19 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
                 print("Error Code : " + str(res.status_code) + " | " + res.text)
 
             if res.json()["msg_cd"] == "APBK1744":
-                MakeBuyLimitOrderIRP(stockcode, amt, price)
+                make_buy_limit_order_IRP(stockcode, amt, price)
 
             return res.json()["msg_cd"]
 
 
 # 지정가 매도하기!
-def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
+def make_sell_limit_order(stockcode, amt, price, ErrLog="YES"):
 
     time.sleep(0.2)
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return MakeSellLimitOrderIRP(stockcode, amt, price)
+        return make_sell_limit_order_IRP(stockcode, amt, price)
     else:
 
         TrId = "TTTC0801U"
@@ -846,7 +846,7 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
-            "ORD_UNPR": str(PriceAdjust(price, stockcode)),
+            "ORD_UNPR": str(price_adjust(price, stockcode)),
         }
         headers = {
             "Content-Type": "application/json",
@@ -875,19 +875,19 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
                 print("Error Code : " + str(res.status_code) + " | " + res.text)
 
             if res.json()["msg_cd"] == "APBK1744":
-                MakeSellLimitOrderIRP(stockcode, amt, price)
+                make_sell_limit_order_IRP(stockcode, amt, price)
 
             return res.json()["msg_cd"]
 
 
 # 보유한 주식을 모두 시장가 매도하는 극단적 함수
-def SellAllStock():
-    StockList = GetMyStockList()
+def sell_all_stock():
+    StockList = get_my_stock_list()
 
     # 시장가로 모두 매도 한다
     for stock_info in StockList:
         pprint.pprint(
-            MakeSellMarketOrder(stock_info["StockCode"], stock_info["StockAmt"])
+            make_sell_market_order(stock_info["StockCode"], stock_info["StockAmt"])
         )
 
 
@@ -895,7 +895,7 @@ def SellAllStock():
 
 
 # 시장가 주문하기!
-def MakeBuyMarketOrderIRP(stockcode, amt):
+def make_buy_market_order_IRP(stockcode, amt):
 
     time.sleep(0.2)
 
@@ -947,7 +947,7 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
 
 
 # 시장가 매도하기!
-def MakeSellMarketOrderIRP(stockcode, amt):
+def make_sell_market_order_IRP(stockcode, amt):
 
     time.sleep(0.2)
 
@@ -999,7 +999,7 @@ def MakeSellMarketOrderIRP(stockcode, amt):
 
 
 # 지정가 주문하기!
-def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
+def make_buy_limit_order_IRP(stockcode, amt, price, ErrLog="YES"):
 
     time.sleep(0.2)
 
@@ -1015,7 +1015,7 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "ORD_DVSN": "00",
         "PDNO": stockcode,
         "LNKD_ORD_QTY": str(int(amt)),
-        "LNKD_ORD_UNPR": str(PriceAdjust(price, stockcode)),
+        "LNKD_ORD_UNPR": str(price_adjust(price, stockcode)),
         "RVSE_CNCL_DVSN_CD": "00",
         "KRX_FWDG_ORD_ORGNO": "",
         "ORGN_ODNO": "",
@@ -1051,7 +1051,7 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
 
 # 지정가 매도하기!
-def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
+def make_sell_limit_order_IRP(stockcode, amt, price, ErrLog="YES"):
 
     time.sleep(0.2)
 
@@ -1067,7 +1067,7 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "ORD_DVSN": "00",
         "PDNO": stockcode,
         "LNKD_ORD_QTY": str(int(amt)),
-        "LNKD_ORD_UNPR": str(PriceAdjust(price, stockcode)),
+        "LNKD_ORD_UNPR": str(price_adjust(price, stockcode)),
         "RVSE_CNCL_DVSN_CD": "00",
         "KRX_FWDG_ORD_ORGNO": "",
         "ORGN_ODNO": "",
@@ -1103,13 +1103,13 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
 
 # 보유한 주식을 모두 시장가 매도하는 극단적 함수
-def SellAllStockIRP():
-    StockList = GetMyStockList()
+def sell_all_stock_IRP():
+    StockList = get_my_stock_list()
 
     # 시장가로 모두 매도 한다
     for stock_info in StockList:
         pprint.pprint(
-            MakeSellMarketOrderIRP(stock_info["StockCode"], stock_info["StockAmt"])
+            make_sell_market_order_IRP(stock_info["StockCode"], stock_info["StockAmt"])
         )
 
 
@@ -1120,7 +1120,7 @@ def SellAllStockIRP():
 
 
 # 매수 가능한지 체크 하기!
-def CheckPossibleBuyInfo(stockcode, price, type):
+def check_possible_buy_info(stockcode, price, type):
 
     time.sleep(0.2)
 
@@ -1149,7 +1149,7 @@ def CheckPossibleBuyInfo(stockcode, price, type):
         "CANO": common.get_account_no(),
         "ACNT_PRDT_CD": common.get_account_prd_no(),
         "PDNO": stockcode,
-        "ORD_UNPR": str(PriceAdjust(price, stockcode)),
+        "ORD_UNPR": str(price_adjust(price, stockcode)),
         "ORD_DVSN": type_code,
         "CMA_EVLU_AMT_ICLD_YN": "N",
         "OVRS_ICLD_YN": "N",
@@ -1176,18 +1176,18 @@ def CheckPossibleBuyInfo(stockcode, price, type):
 
 
 # 매수 가능한수량으로 보정
-def AdjustPossibleAmt(stockcode, amt, type):
-    NowPrice = GetCurrentPrice(stockcode)
+def adjust_possible_amt(stockcode, amt, type):
+    NowPrice = get_current_price(stockcode)
 
     data = None
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
 
-        data = CheckPossibleBuyInfoIRP(stockcode, NowPrice, type)
+        data = adjust_possible_buy_info_IRP(stockcode, NowPrice, type)
     else:
 
-        data = CheckPossibleBuyInfo(stockcode, NowPrice, type)
+        data = check_possible_buy_info(stockcode, NowPrice, type)
 
     MaxAmt = int(data["MaxAmt"])
 
@@ -1200,7 +1200,7 @@ def AdjustPossibleAmt(stockcode, amt, type):
 
 
 # 매수 가능한지 체크 하기! -IRP 계좌
-def CheckPossibleBuyInfoIRP(stockcode, price, type):
+def adjust_possible_buy_info_IRP(stockcode, price, type):
 
     time.sleep(0.2)
 
@@ -1227,7 +1227,7 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
         "CANO": common.get_account_no(),
         "ACNT_PRDT_CD": common.get_account_prd_no(),
         "PDNO": stockcode,
-        "ORD_UNPR": str(PriceAdjust(price, stockcode)),
+        "ORD_UNPR": str(price_adjust(price, stockcode)),
         "ORD_DVSN": type_code,
         "CMA_EVLU_AMT_ICLD_YN": "N",
         "ACCA_DVSN_CD": "00",
@@ -1257,7 +1257,7 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
 
 
 # 주문 리스트를 얻어온다! 종목 코드, side는 ALL or BUY or SELL, 상태는 OPEN or CLOSE
-def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
+def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
 
     time.sleep(0.2)
 
@@ -1416,7 +1416,7 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
 
 
 # 주문 취소/수정 함수
-def CancelModifyOrder(
+def cancel_modify_order(
     stockcode,
     order_num1,
     order_num2,
@@ -1429,7 +1429,7 @@ def CancelModifyOrder(
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
-        return CancelModifyOrderIRP(
+        return cancel_modify_order_IRP(
             stockcode,
             order_num1,
             order_num2,
@@ -1465,7 +1465,7 @@ def CancelModifyOrder(
             "ORD_DVSN": order_type,
             "RVSE_CNCL_DVSN_CD": mode_type,
             "ORD_QTY": str(order_amt),
-            "ORD_UNPR": str(PriceAdjust(order_price, stockcode)),
+            "ORD_UNPR": str(price_adjust(order_price, stockcode)),
             "QTY_ALL_ORD_YN": "N",
         }
         headers = {
@@ -1497,7 +1497,7 @@ def CancelModifyOrder(
 
 
 # 연금IRP 계좌 주문 취소/수정 함수
-def CancelModifyOrderIRP(
+def cancel_modify_order_IRP(
     stockcode,
     order_num1,
     order_num2,
@@ -1534,7 +1534,7 @@ def CancelModifyOrderIRP(
         "ORD_DVSN": order_type,
         "PDNO": "",
         "LNKD_ORD_QTY": str(int(order_amt)),
-        "LNKD_ORD_UNPR": str(PriceAdjust(order_price, stockcode)),
+        "LNKD_ORD_UNPR": str(price_adjust(order_price, stockcode)),
         "RVSE_CNCL_DVSN_CD": mode_type,
         "KRX_FWDG_ORD_ORGNO": order_num1,
         "ORGN_ODNO": order_num2,
@@ -1570,14 +1570,14 @@ def CancelModifyOrderIRP(
 
 
 # 모든 주문을 취소하는 함수
-def CancelAllOrders(stockcode="", side="ALL"):
+def cancel_all_orders(stockcode="", side="ALL"):
 
-    OrderList = GetOrderList(stockcode, side)
+    OrderList = get_order_list(stockcode, side)
 
     for order in OrderList:
         if order["OrderSatus"].upper() == "OPEN":
             pprint.pprint(
-                CancelModifyOrder(
+                cancel_modify_order(
                     order["OrderStock"],
                     order["OrderNum"],
                     order["OrderNum2"],
@@ -1588,10 +1588,10 @@ def CancelAllOrders(stockcode="", side="ALL"):
 
 
 # 시장가 주문 정보를 읽어서 체결 평균가를 리턴! 에러나 못가져오면 현재가를 리턴!
-def GetMarketOrderPrice(stockcode, ResultOrder):
+def get_market_order_price(stockcode, ResultOrder):
     time.sleep(0.2)
 
-    OrderList = GetOrderList(stockcode)
+    OrderList = get_order_list(stockcode)
 
     OrderDonePrice = 0
 
@@ -1605,7 +1605,7 @@ def GetMarketOrderPrice(stockcode, ResultOrder):
 
     # 혹시나 없다면 현재가로 셋팅!
     if OrderDonePrice == 0:
-        OrderDonePrice = GetCurrentPrice(stockcode)
+        OrderDonePrice = get_current_price(stockcode)
 
     return OrderDonePrice
 
@@ -1705,7 +1705,7 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
 
 
 # 100개이상 가져오도록 수정!
-def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
+def get_ohlcv_new(stock_code, p_code, get_count, adj_ok="1"):
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -1835,7 +1835,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 
 
 # ETF의 NAV얻기
-def GetETF_Nav(stock_code, Log="N"):
+def get_ETF_NAV(stock_code, Log="N"):
 
     IsExcept = False
     Nav = 0
@@ -1890,13 +1890,13 @@ def GetETF_Nav(stock_code, Log="N"):
 
         except Exception as e:
             print("except!!!!!!!!")
-            Nav = GetCurrentPrice(stock_code)
+            Nav = get_current_price(stock_code)
 
     return Nav
 
 
 # ETF의 괴리율 구하기!
-def GetETFGapAvg(stock_code, Log="N"):
+def get_ETF_gap_avg(stock_code, Log="N"):
 
     GapAvg = 0
     IsExcept = False

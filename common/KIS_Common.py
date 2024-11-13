@@ -192,8 +192,8 @@ def get_from_now_date_str(area="KR", type="NONE", days=100):
 
 # 통합 증거금 사용시 잔고 확인!
 def get_balance_krw_total():
-    kr_data = kis_kr.GetBalance()
-    us_data = kis_us.GetBalance("KRW")
+    kr_data = kis_kr.get_balance()
+    us_data = kis_us.get_balance("KRW")
 
     balanceDict = dict()
 

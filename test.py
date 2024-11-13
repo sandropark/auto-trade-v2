@@ -14,7 +14,7 @@ from common.env_type import EnvType
 
 
 # 현재 장이 열렸는지 여부
-# if kis_us.IsMarketOpen() == True:
+# if kis_us.is_market_open() == True:
 #     print("Maket is Open!!")
 # else:
 #     print("Maket is Closed!!")

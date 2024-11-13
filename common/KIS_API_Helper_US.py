@@ -44,7 +44,7 @@ import pandas as pd
 
 
 # 시장이 열렸는지 여부 체크! #토요일 일요일은 확실히 안열리니깐 제외!
-def IsMarketOpen():
+def is_market_open():
 
     now_time = datetime.now(timezone("America/New_York"))
     pprint.pprint(now_time)
@@ -105,8 +105,8 @@ def IsMarketOpen():
 
             try:
 
-                order = MakeBuyLimitOrder("AAPL", 1, 1)
-                result = CancelModifyOrder(
+                order = make_buy_limit_order("AAPL", 1, 1)
+                result = cancel_modify_order(
                     "AAPL", str(int(order["OrderNum2"])), 1, 1, "CANCEL", "YES"
                 )
                 pprint.pprint(result)
@@ -146,13 +146,13 @@ def IsMarketOpen():
 
 
 # price_pricision 호가 단위에 맞게 변형해준다. 지정가 매매시 사용
-def PriceAdjust(price):
+def price_adjust(price):
 
     return round(float(price), 2)
 
 
 # 환율 리턴!
-def GetExrt():
+def get_exrt():
 
     time.sleep(0.2)
 
@@ -235,7 +235,7 @@ def GetDayOrNight():
 
 
 # 미국 잔고! 달러로 리턴할건지 원화로 리턴할건지!
-def GetBalance(st="USD"):
+def get_balance(st="USD"):
 
     time.sleep(0.2)
 
@@ -274,7 +274,7 @@ def GetBalance(st="USD"):
         result = res.json()["output2"]
 
         # 실시간 주식 상태가 반영이 안되서 주식 정보를 직접 읽어서 계산!
-        MyStockList = GetMyStockList(st)
+        MyStockList = get_my_stock_list(st)
 
         StockOriMoneyTotal = 0
         StockNowMoneyTotal = 0
@@ -411,7 +411,7 @@ def GetBalance(st="USD"):
 
 
 # 미국 보유 주식 리스트
-def GetMyStockList(st="USD"):
+def get_my_stock_list(st="USD"):
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-balance"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -524,7 +524,7 @@ def GetMyStockList(st="USD"):
                         else:
 
                             time.sleep(0.2)
-                            Rate = GetExrt()
+                            Rate = get_exrt()
 
                             StockInfo["StockAvgPrice"] = float(
                                 stock["pchs_avg_pric"]
@@ -570,7 +570,7 @@ def GetMyStockList(st="USD"):
 
 
 # 미국 주식현재가 시세
-def GetCurrentPriceOri(market, stock_code):
+def get_current_price_ori(market, stock_code):
 
     time.sleep(0.2)
 
@@ -604,7 +604,7 @@ def GetCurrentPriceOri(market, stock_code):
 
 
 # 미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 증권의 현재가를 가지고 옵니다!
-def GetCurrentPrice(stock_code):
+def get_current_price(stock_code):
 
     time.sleep(0.2)
 
@@ -661,7 +661,7 @@ def GetCurrentPrice(stock_code):
 
 
 # 미국 지정가 주문하기!
-def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt=False):
+def make_buy_limit_order_ori(stockcode, amt, price, market, adjustAmt=False):
 
     # 매수가능 수량으로 보정할지 여부
     if adjustAmt == True:
@@ -669,7 +669,7 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt=False):
             # 가상 계좌는 미지원
             if common.get_now_dist() != "VIRTUAL":
                 # 매수 가능한수량으로 보정
-                amt = AdjustPossibleAmt(stockcode, amt)
+                amt = adjust_possible_amt(stockcode, amt)
 
         except Exception as e:
             print("Exception")
@@ -689,7 +689,7 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt=False):
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
-        "OVRS_ORD_UNPR": str(PriceAdjust(price)),
+        "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ORD_SVR_DVSN_CD": "0",
     }
     headers = {
@@ -722,7 +722,7 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt=False):
 
 
 # 미국 지정가 주문하기!
-def MakeSellLimitOrderOri(stockcode, amt, price, market):
+def make_sell_limit_order_ori(stockcode, amt, price, market):
 
     time.sleep(0.2)
 
@@ -739,7 +739,7 @@ def MakeSellLimitOrderOri(stockcode, amt, price, market):
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
-        "OVRS_ORD_UNPR": str(PriceAdjust(price)),
+        "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ORD_SVR_DVSN_CD": "0",
     }
     headers = {
@@ -772,14 +772,14 @@ def MakeSellLimitOrderOri(stockcode, amt, price, market):
 
 
 # 미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
-def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False):
+def make_buy_limit_order(stockcode, amt, price, adjustAmt=False):
 
     if adjustAmt == True:
         try:
             # 가상 계좌는 미지원
             if common.get_now_dist() != "VIRTUAL":
                 # 매수 가능한수량으로 보정
-                amt = AdjustPossibleAmt(stockcode, amt)
+                amt = adjust_possible_amt(stockcode, amt)
 
         except Exception as e:
             print("Exception")
@@ -790,7 +790,7 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False):
     if common.get_now_dist() == "VIRTUAL":
         TrId = "VTTT1002U"
 
-    market = GetMarketCodeUS(stockcode)
+    market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -801,7 +801,7 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False):
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
-        "OVRS_ORD_UNPR": str(PriceAdjust(price)),
+        "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ORD_SVR_DVSN_CD": "0",
     }
     headers = {
@@ -834,7 +834,7 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt=False):
 
 
 # 미국 지정가 주문하기! 마켓을 모를 경우 자동으로 뒤져서!
-def MakeSellLimitOrder(stockcode, amt, price):
+def make_sell_limit_order(stockcode, amt, price):
 
     time.sleep(0.2)
 
@@ -842,7 +842,7 @@ def MakeSellLimitOrder(stockcode, amt, price):
     if common.get_now_dist() == "VIRTUAL":
         TrId = "VTTT1001U"
 
-    market = GetMarketCodeUS(stockcode)
+    market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -853,7 +853,7 @@ def MakeSellLimitOrder(stockcode, amt, price):
         "PDNO": stockcode,
         "ORD_DVSN": "00",
         "ORD_QTY": str(int(amt)),
-        "OVRS_ORD_UNPR": str(PriceAdjust(price)),
+        "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ORD_SVR_DVSN_CD": "0",
     }
     headers = {
@@ -885,7 +885,7 @@ def MakeSellLimitOrder(stockcode, amt, price):
 
 
 # 미국의 나스닥,뉴욕거래소, 아멕스를 뒤져서 있는 해당 주식의 거래소 코드를 리턴합니다!!
-def GetMarketCodeUS(stock_code, return_ori_market=False):
+def get_market_code_us(stock_code, return_ori_market=False):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-price/v1/quotations/price"
@@ -950,13 +950,13 @@ def GetMarketCodeUS(stock_code, return_ori_market=False):
 
 
 # 보유한 주식을 모두 매도하는 극단적 함수
-def SellAllStock():
-    StockList = GetMyStockList()
+def sell_all_stock():
+    StockList = get_my_stock_list()
 
     # 시장가로 모두 매도 한다
     for stock_info in StockList:
         pprint.pprint(
-            MakeSellLimitOrder(
+            make_sell_limit_order(
                 stock_info["StockCode"],
                 stock_info["StockAmt"],
                 stock_info["StockAvgPrice"],
@@ -965,7 +965,7 @@ def SellAllStock():
 
 
 # 매수 가능한지 체크 하기!
-def CheckPossibleBuyInfo(stockcode, price):
+def check_possible_buy_info(stockcode, price):
 
     time.sleep(0.2)
 
@@ -978,7 +978,7 @@ def CheckPossibleBuyInfo(stockcode, price):
         TrId = "TTTS3007R"
     """
 
-    market = GetMarketCodeUS(stockcode)
+    market = get_market_code_us(stockcode)
 
     # 헤더 설정
     headers = {
@@ -994,7 +994,7 @@ def CheckPossibleBuyInfo(stockcode, price):
         "CANO": common.get_account_no(),
         "ACNT_PRDT_CD": common.get_account_prd_no(),
         "OVRS_EXCG_CD": market,
-        "OVRS_ORD_UNPR": str(PriceAdjust(price)),
+        "OVRS_ORD_UNPR": str(price_adjust(price)),
         "ITEM_CD": stockcode,
     }
 
@@ -1019,10 +1019,10 @@ def CheckPossibleBuyInfo(stockcode, price):
 
 
 # 매수 가능한수량으로 보정
-def AdjustPossibleAmt(stockcode, amt):
-    NowPrice = GetCurrentPrice(stockcode)
+def adjust_possible_amt(stockcode, amt):
+    NowPrice = get_current_price(stockcode)
 
-    data = CheckPossibleBuyInfo(stockcode, NowPrice)
+    data = check_possible_buy_info(stockcode, NowPrice)
 
     if str(data) == "MCA00124" or str(data) == "OPSQ0002":
         return int(amt)
@@ -1042,7 +1042,7 @@ def AdjustPossibleAmt(stockcode, amt):
 
 
 # 주문 리스트를 얻어온다! 종목 코드, side는 ALL or BUY or SELL, 상태는 OPEN or CLOSE
-def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
+def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
 
     time.sleep(0.2)
 
@@ -1221,7 +1221,7 @@ def GetOrderList(stockcode="", side="ALL", status="ALL", limit=5):
 
 
 # 주문 취소하거나 종료하기
-def CancelModifyOrder(
+def cancel_modify_order(
     stockcode, order_num, order_amt, order_price, mode="CANCEL", Errlog="YES"
 ):
 
@@ -1235,7 +1235,7 @@ def CancelModifyOrder(
     if mode.upper() == "MODIFY":
         mode_type = "01"
 
-    market = GetMarketCodeUS(stockcode)
+    market = get_market_code_us(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order-rvsecncl"
     URL = f"{common.get_url_base()}/{PATH}"
@@ -1247,7 +1247,7 @@ def CancelModifyOrder(
         "ORGN_ODNO": str(order_num),
         "RVSE_CNCL_DVSN_CD": mode_type,
         "ORD_QTY": str(order_amt),
-        "OVRS_ORD_UNPR": str(PriceAdjust(order_price)),
+        "OVRS_ORD_UNPR": str(price_adjust(order_price)),
     }
 
     # pprint.pprint(data)
@@ -1281,14 +1281,14 @@ def CancelModifyOrder(
         return res.json()["msg_cd"]
 
 
-def CancelAllOrders(stockcode="", side="ALL"):
+def cancel_all_orders(stockcode="", side="ALL"):
 
-    OrderList = GetOrderList(stockcode, side, "OPEN")
+    OrderList = get_order_list(stockcode, side, "OPEN")
 
     for order in OrderList:
         if order["OrderSatus"].upper() == "OPEN":
             pprint.pprint(
-                CancelModifyOrder(
+                cancel_modify_order(
                     order["OrderStock"],
                     str(int(order["OrderNum2"])),
                     int(order["OrderAmt"]),
@@ -1327,7 +1327,7 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
 
     params = {
         "AUTH": "",
-        "EXCD": GetMarketCodeUS(stock_code, True),
+        "EXCD": get_market_code_us(stock_code, True),
         "SYMB": stock_code,
         "GUBN": str(gubun),
         "BYMD": date_str,
@@ -1395,7 +1395,7 @@ def get_ohlcv(stock_code, p_code, adj_ok="1"):
 
 
 # 일봉 정보 여러개 가져오는 개선된 함수!
-def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
+def get_ohlcv_new(stock_code, p_code, get_count, adj_ok="1"):
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
     URL = f"{common.get_url_base()}/{PATH}"
 
@@ -1439,7 +1439,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok="1"):
 
         params = {
             "AUTH": "",
-            "EXCD": GetMarketCodeUS(stock_code, True),
+            "EXCD": get_market_code_us(stock_code, True),
             "SYMB": stock_code,
             "GUBN": str(gubun),
             "BYMD": date_str,
