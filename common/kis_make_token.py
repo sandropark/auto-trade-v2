@@ -9,11 +9,11 @@ m_hour = time_info.tm_hour
 
 # 9시에만 내게 메시지를 보냅니다
 # if m_hour == 0:
-    # chat_client.send_message("Server is OK")
-    
+# chat_client.send_message("Server is OK")
+
 chat_client.send_message("Server is OK")
 
-#실 계좌 모의 계좌의 토큰 값을 받아서 파일에 저장합니다.
+# 실 계좌 모의 계좌의 토큰 값을 받아서 파일에 저장합니다.
 common.make_token()
 common.set_change_mode(EnvType.V)
 common.make_token()

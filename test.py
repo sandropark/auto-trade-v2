@@ -7,13 +7,13 @@ import time
 
 from common.env_type import EnvType
 
-#통합증거금을 사용하시는 분은 강의 영상을 잘 봐주세요!!
+# 통합증거금을 사용하시는 분은 강의 영상을 잘 봐주세요!!
 
-#REAL 실계좌 VIRTUAL 모의 계좌
-# common.set_change_mode("REAL") 
+# REAL 실계좌 VIRTUAL 모의 계좌
+# common.set_change_mode("REAL")
 
 
-#현재 장이 열렸는지 여부
+# 현재 장이 열렸는지 여부
 # if kis_us.IsMarketOpen() == True:
 #     print("Maket is Open!!")
 # else:
@@ -26,7 +26,7 @@ from common.env_type import EnvType
 # print(common.get_app_key())
 
 # print(common.get_token())
-'''
+"""
 
 print("                                     ")
 print("-----------삼성 전자 일봉 -------------")
@@ -76,8 +76,8 @@ print(" 이건 가져올 수 없음 ")
 #영상과는 다르게 미국주식의 경우 년봉은 가져올 수 없어요
 #내부적으로 수정주가(액면분할 반영)를 가져오도록 API를 변경했기 때문이예요 (해당 API가 년봉 미지원)
 #pprint.pprint(kis_us.get_ohlcv("AAPL","Y"))
-'''
-'''
+"""
+"""
 
 print("                                     ")
 print("--------TQQQ는 한투에 없다 -------------")
@@ -126,12 +126,8 @@ pprint.pprint(common.get_ohlcv1("US","AAPL"))
 print(" Yahoo ")
 
 pprint.pprint(common.get_ohlcv2("US","AAPL"))
-'''
-
-
+"""
 
 
 # pprint.pprint(common.get_ohlcv("KR","005930"))
 # pprint.pprint(common.get_ohlcv("US","TQQQ"))
-
-
