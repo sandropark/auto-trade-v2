@@ -3,136 +3,95 @@ import json
 import requests
 from datetime import datetime, timedelta
 from pytz import timezone
-import KIS_API_Helper_US as KisUS
-import KIS_API_Helper_KR as KisKR
+from . import kis_api_helper_us as kis_us
+from . import kis_api_helper_kr as kis_kr
 import time
 import FinanceDataReader as fdr
 import pandas_datareader.data as web
 import pandas as pd
-from env_type import EnvType
+from .env_type import EnvType
 
 stock_info = None
 
-with open('../config/hantu-stock-config.yml', encoding='UTF-8') as f:
+with open('config/hantu-stock-config.yml', encoding='UTF-8') as f:
     stock_info = yaml.load(f, Loader=yaml.FullLoader)
 
 ############################################################################################################################################################
-NOW_DIST = ""
+NOW_DIST : EnvType = EnvType.R
 
 #계좌 전환 함수! REAL 실계좌 VIRTUAL 모의계좌
-def SetChangeMode(dist = "REAL"):
-    global NOW_DIST 
+def set_change_mode(dist: EnvType = EnvType.R):
+    global NOW_DIST
     NOW_DIST = dist
 
 
 #현재 선택된 계좌정보를 리턴!
-def GetNowDist():
-    global NOW_DIST
+def get_now_dist():
     return NOW_DIST
 
 ############################################################################################################################################################
 
-#앱 키를 반환하는 함수
-def GetAppKey(dist: EnvType = EnvType.R):
+def get_app_key():
     global stock_info
-    
-    if dist == EnvType.V:
+
+    if NOW_DIST == EnvType.V:
         return stock_info['virtual']['app-key']
         
     return stock_info['real']['app-key']
 
+def get_app_secret():
+    global stock_info
 
-#앱시크릿을 리턴!
-def GetAppSecret(dist = "REAL"):
+    if NOW_DIST == EnvType.V:
+        return stock_info['virtual']['app-secret']
     
+    return stock_info['real']['app-secret']
+
+def get_account_no():
     global stock_info
     
-    key = ""
+    if NOW_DIST == EnvType.V:
+        return stock_info['virtual']['cano']
     
-    if dist == "REAL":
-        key = "REAL_APP_SECRET"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_APP_SECRET"
-        
-    return stock_info[key]
+    return stock_info['real']['cano']
 
-
-#계좌 정보를 리턴!
-def GetAccountNo(dist = "REAL"):
+def get_account_prd_no():
     global stock_info
     
-    key = ""
+    if NOW_DIST == EnvType.V:
+        return stock_info['virtual']['acnt-prdt-cd']
     
-    if dist == "REAL":
-        key = "REAL_CANO"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_CANO"
-        
-    return stock_info[key]
+    return stock_info['real']['acnt-prdt-cd']
 
-
-#계좌 정보를 리턴!
-def GetPrdtNo(dist = "REAL"):
+def get_url_base():
     global stock_info
     
-    key = ""
+    if NOW_DIST == EnvType.V:
+        return stock_info['virtual']['url-base']
     
-    if dist == "REAL":
-        key = "REAL_ACNT_PRDT_CD"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_ACNT_PRDT_CD"
-        
-    return stock_info[key]
+    return stock_info['real']['url-base']
 
-
-#URL주소를 리턴!
-def GetUrlBase(dist = "REAL"):
+def get_token_path():
     global stock_info
     
-    key = ""
+    if NOW_DIST == EnvType.V:
+        return stock_info['virtual']['token-path']
     
-    if dist == "REAL":
-        key = "REAL_URL"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_URL"
-        
-    return stock_info[key]
+    return stock_info['real']['token-path']
 
-
-
-
-
-#토큰 저장할 경로
-def GetTokenPath(dist = "REAL"):
-    global stock_info
-    
-    key = ""
-    
-    if dist == "REAL":
-        key = "REAL_TOKEN_PATH"
-    elif dist == "VIRTUAL":
-        key = "VIRTUAL_TOKEN_PATH"
-        
-    return stock_info[key]
-
-
-        
 
 #토큰 값을 리퀘스트 해서 실제로 만들어서 파일에 저장하는 함수!! 첫번째 파라미터: "REAL" 실계좌, "VIRTUAL" 모의계좌
-def MakeToken(dist = "REAL"):
-
-
+def make_token():
     headers = {"content-type":"application/json"}
     body = {
         "grant_type":"client_credentials",
-        "appkey":GetAppKey(dist), 
-        "appsecret":GetAppSecret(dist)
+        "appkey":get_app_key(), 
+        "appsecret":get_app_secret()
         }
 
     PATH = "oauth2/tokenP"
-    URL = f"{GetUrlBase(dist)}/{PATH}"
+    URL = f"{get_url_base()}/{PATH}"
     res = requests.post(URL, headers=headers, data=json.dumps(body))
-    
 
     if res.status_code == 200:
         my_token = res.json()["access_token"]
@@ -142,51 +101,38 @@ def MakeToken(dist = "REAL"):
 
         #해당 토큰을 파일로 저장해 둡니다!
         dataDict["authorization"] = my_token
-        with open(GetTokenPath(dist), 'w') as outfile:
+        with open(get_token_path(), 'w') as outfile:
             json.dump(dataDict, outfile)   
-
         print("TOKEN : ", my_token)
-
         return my_token
-
     else:
         print('Get Authentification token fail!')  
         return "FAIL"
 
-
-#파일에 저장된 토큰값을 읽는 함수.. 만약 파일이 없다면 MakeToken 함수를 호출한다!
-def GetToken(dist = "REAL"):
-        
+#파일에 저장된 토큰값을 읽는 함수.. 만약 파일이 없다면 make_token 함수를 호출한다!
+def get_token():
     #빈 딕셔너리를 선언합니다!
     dataDict = dict()
-
     try:
-
         #이 부분이 파일을 읽어서 딕셔너리에 넣어주는 로직입니다. 
-        with open(GetTokenPath(dist), 'r') as json_file:
+        with open(get_token_path(), 'r') as json_file:
             dataDict = json.load(json_file)
-
-
         return dataDict['authorization']
-
     except Exception as e:
         print("Exception by First")
-
         #처음에는 파일이 존재하지 않을테니깐 바로 토큰 값을 구해서 리턴!
-        return MakeToken(dist)
-
+        return make_token()
 
 ############################################################################################################################################################
 #해시키를 리턴한다!
 def GetHashKey(datas):
-
     PATH = "uapi/hashkey"
-    URL = f"{GetUrlBase(NOW_DIST)}/{PATH}"
+    URL = f"{get_url_base(NOW_DIST)}/{PATH}"
 
     headers = {
     'content-Type' : 'application/json',
-    'appKey' : GetAppKey(NOW_DIST),
-    'appSecret' : GetAppSecret(NOW_DIST),
+    'appKey' : get_app_key(NOW_DIST),
+    'appSecret' : get_app_secret(NOW_DIST),
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(datas))
@@ -196,9 +142,6 @@ def GetHashKey(datas):
     else:
         print("Error Code : " + str(res.status_code) + " | " + res.text)
         return None
-
-############################################################################################################################################################
-
 
 ############################################################################################################################################################
 #한국인지 미국인지 구분해 현재 날짜정보를 리턴해 줍니다!
@@ -234,8 +177,8 @@ def GetFromNowDateStr(area = "KR", type= "NONE" , days=100):
 
 #통합 증거금 사용시 잔고 확인!
 def GetBalanceKrwTotal():
-    kr_data = KisKR.GetBalance()
-    us_data = KisUS.GetBalance("KRW")
+    kr_data = kis_kr.GetBalance()
+    us_data = kis_us.GetBalance("KRW")
 
     balanceDict = dict()
 
@@ -248,9 +191,6 @@ def GetBalanceKrwTotal():
     balanceDict['TotalMoney'] = str(float(kr_data['TotalMoney']) + float(us_data['TotalMoney']))
 
     return balanceDict
-
-
-
 
 ############################################################################################################################################################
 #OHLCV 값을 한국투자증권 혹은 FinanceDataReader 혹은 야후 파이낸스에서 가지고 옴!
@@ -267,7 +207,7 @@ def GetOhlcv(area, stock_code, limit = 500):
         if area == "US":
 
             print("----First try----")
-            df = KisUS.GetOhlcv(stock_code,"D")
+            df = kis_us.GetOhlcv(stock_code,"D")
 
             #한투에서 100개 이상 못가져 오니깐 그 이상은 아래 로직을 탄다. 혹은 없는 종목이라면 역시 아래 로직을 탄다
             if Adjlimit > 100 or len(df) == 0:
@@ -288,7 +228,7 @@ def GetOhlcv(area, stock_code, limit = 500):
         else:
 
             print("----First try----")
-            df = KisKR.GetOhlcv(stock_code,"D")
+            df = kis_kr.GetOhlcv(stock_code,"D")
             
 
             #한투에서 100개 이상 못가져 오니깐 그 이상은 아래 로직을 탄다. 혹은 없는 종목이라면 역시 아래 로직을 탄다
@@ -318,9 +258,6 @@ def GetOhlcv(area, stock_code, limit = 500):
         print("---", limit)
         return df[-limit:]
 
-
-
-
 #한국 주식은 KRX 정보데이터시스템에서 가져온다. 그런데 미국주식 크롤링의 경우 investing.com 에서 가져오는데 안전하게 2초 정도 쉬어야 한다!
 # https://financedata.github.io/posts/finance-data-reader-users-guide.html
 def GetOhlcv1(area, stock_code, limit = 500):
@@ -347,9 +284,6 @@ def GetOhlcv1(area, stock_code, limit = 500):
 
 
     return df
-
-
-
 
 #야후 파이낸스에서 정보 가져오기! 
 # https://pandas-datareader.readthedocs.io/en/latest/
@@ -394,13 +328,6 @@ def GetOhlcv2(area, stock_code, limit = 500):
 
 
     return df
-
-
-    
-
-
-
-
 
 ############################################################################################################################################################
 

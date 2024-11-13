@@ -14,7 +14,7 @@ https://drive.google.com/drive/folders/1mKGGR355vmBCxB7A3sOOSh8-gQs1CiMF?usp=dri
 맨 마지막 Outro-2 강의 수업자료에 먼저 반영되니 그 코드를 최종본이라 생각하고 받으시면 됩니다.
 구독이 끝났다면 위 구글 드라이브 링크에서 다운로드 하세요!(실시간 업데이트!)
 
-공통 모듈 중 KIS_Common.py만 클래스 진행하시면 계속 내용이 추가 수정 되며 Outro-2에 최종본이라고 생각하시면 되는데
+공통 모듈 중 KIS_common.py만 클래스 진행하시면 계속 내용이 추가 수정 되며 Outro-2에 최종본이라고 생각하시면 되는데
 다계좌매매를 위해서는 챕터8을 수강하셔서 자신만의 계좌상황에 맞게 수정해야 합니다.
 
 
@@ -33,7 +33,7 @@ https://blog.naver.com/zacra
 기다릴게요 ^^!
 
 '''
-import KIS_Common as Common
+from common import kis_common as common
 import requests
 import json
 from datetime import datetime
@@ -57,13 +57,13 @@ def IsTodayOpenCheck():
 
 
     PATH = "uapi/domestic-stock/v1/quotations/chk-holiday"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"CTCA0903R"}
 
     params = {
@@ -129,20 +129,20 @@ def IsMarketOpen():
         print("Time is OK... but one more checked!!!")
 
         result = ""
-        NowDist = Common.GetNowDist() 
+        NowDist = common.get_now_dist() 
         try:
             #가상 계좌면 메세지 통일을 위해 실계좌에서 가짜 주문 취소 주문을 넣는다!
-            if Common.GetNowDist() == "VIRTUAL":
+            if common.get_now_dist() == "VIRTUAL":
 
-                Common.SetChangeMode("REAL")
+                common.set_change_mode("REAL")
                 result = MakeSellLimitOrder("069500",1,1,"CHECK")
-                Common.SetChangeMode("VIRTUAL")
+                common.set_change_mode("VIRTUAL")
 
             else:
                 result = MakeSellLimitOrder("069500",1,1,"CHECK")
 
         except Exception as e:
-            Common.SetChangeMode(NowDist)
+            common.set_change_mode(NowDist)
             print("EXCEPTION ",e)
 
 
@@ -213,7 +213,7 @@ def PriceAdjust(price, stock_code):
 def GetBalance():
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return GetBalanceIRP()
     else:
 
@@ -221,24 +221,24 @@ def GetBalance():
         time.sleep(0.2)
 
         PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
         TrId = "TTTC8434R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC8434R"
 
 
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id": TrId,
                 "custtype": "P"}
 
         params = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "AFHR_FLPR_YN" : "N",
             "OFL_YN": "",
             "INQR_DVSN": "02",
@@ -301,24 +301,24 @@ def GetBalanceIRP():
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/trading/pension/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "TTTC8434R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTC8434R"
 
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "AFHR_FLPR_YN" : "N",
         "OFL_YN": "",
         "UNPR_DVSN": "01",
@@ -375,10 +375,10 @@ def GetMyStockList():
     
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "TTTC8434R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTC8434R"
          
          
@@ -401,16 +401,16 @@ def GetMyStockList():
         time.sleep(0.2)
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id": TrId,
                 "tr_cont": tr_cont,
                 "custtype": "P"}
 
         params = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "AFHR_FLPR_YN" : "N",
             "OFL_YN": "",
             "INQR_DVSN": "01",
@@ -512,13 +512,13 @@ def GetCurrentPrice(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"FHKST01010100"}
 
     params = {
@@ -542,13 +542,13 @@ def GetHoga(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"FHKST01010100"}
 
     params = {
@@ -575,21 +575,21 @@ def GetStockName(stock_code):
 
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"FHKST03010100"}
 
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": Common.GetFromNowDateStr("KR","NONE",-7),
-        "FID_INPUT_DATE_2": Common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR","NONE",-7),
+        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
         "FID_PERIOD_DIV_CODE": 'D',
         "FID_ORG_ADJ_PRC": "0"
     }
@@ -615,13 +615,13 @@ def GetCurrentStatus(stock_code):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/quotations/inquire-price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"FHKST01010100"}
 
     params = {
@@ -707,7 +707,7 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt = False):
             print("Exception")
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return MakeBuyMarketOrderIRP(stockcode, amt)
     else:
             
@@ -715,27 +715,27 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt = False):
         time.sleep(0.2)
 
         TrId = "TTTC0802U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC0802U"
 
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "PDNO": stockcode,
             "ORD_DVSN": "01",
             "ORD_QTY": str(int(amt)),
             "ORD_UNPR": "0"
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : Common.GetHashKey(data)
+            "hashkey" : common.GetHashKey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -767,34 +767,34 @@ def MakeBuyMarketOrder(stockcode, amt, adjustAmt = False):
 def MakeSellMarketOrder(stockcode, amt):
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return MakeSellMarketOrderIRP(stockcode, amt)
     else:
 
         time.sleep(0.2)
 
         TrId = "TTTC0801U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC0801U"
 
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "PDNO": stockcode,
             "ORD_DVSN": "01",
             "ORD_QTY": str(int(amt)),
             "ORD_UNPR": "0",
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":TrId,
             "custtype":"P",
-            "hashkey" : Common.GetHashKey(data)
+            "hashkey" : common.GetHashKey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -835,34 +835,34 @@ def MakeBuyLimitOrder(stockcode, amt, price, adjustAmt = False, ErrLog = "NO"):
 
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return MakeBuyLimitOrderIRP(stockcode, amt, price)
     else:
 
         time.sleep(0.2)
 
         TrId = "TTTC0802U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC0802U"
 
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
             "ORD_UNPR": str(PriceAdjust(price,stockcode)),
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : Common.GetHashKey(data)
+            "hashkey" : common.GetHashKey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -896,32 +896,32 @@ def MakeSellLimitOrder(stockcode, amt, price, ErrLog="YES"):
     time.sleep(0.2)
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return MakeSellLimitOrderIRP(stockcode, amt, price)
     else:
 
         TrId = "TTTC0801U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC0801U"
 
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
         data = {
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
             "PDNO": stockcode,
             "ORD_DVSN": "00",
             "ORD_QTY": str(int(amt)),
             "ORD_UNPR": str(PriceAdjust(price,stockcode)),
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":TrId,
             "custtype":"P",
-            "hashkey" : Common.GetHashKey(data)
+            "hashkey" : common.GetHashKey(data)
         }
         res = requests.post(URL, headers=headers, data=json.dumps(data))
         
@@ -973,10 +973,10 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
 
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "SLL_BUY_DVSN_CD" : "02",
         "SLL_TYPE" : "01",
         "ORD_DVSN": "01",
@@ -990,12 +990,12 @@ def MakeBuyMarketOrderIRP(stockcode, amt):
         "ACCA_DVSN_CD" : "01"
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1029,10 +1029,10 @@ def MakeSellMarketOrderIRP(stockcode, amt):
 
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "SLL_BUY_DVSN_CD" : "01",
         "SLL_TYPE" : "01",
         "ORD_DVSN": "01",
@@ -1046,12 +1046,12 @@ def MakeSellMarketOrderIRP(stockcode, amt):
         "ACCA_DVSN_CD" : "01"
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1086,10 +1086,10 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "SLL_BUY_DVSN_CD" : "02",
         "SLL_TYPE" : "01",
         "ORD_DVSN": "00",
@@ -1103,12 +1103,12 @@ def MakeBuyLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "ACCA_DVSN_CD" : "01"
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1142,10 +1142,10 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
 
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "SLL_BUY_DVSN_CD" : "01",
         "SLL_TYPE" : "01",
         "ORD_DVSN": "00",
@@ -1159,12 +1159,12 @@ def MakeSellLimitOrderIRP(stockcode, amt, price, ErrLog="YES"):
         "ACCA_DVSN_CD" : "01"
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1212,10 +1212,10 @@ def CheckPossibleBuyInfo(stockcode, price, type):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-psbl-order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "TTTC8908R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTC8908R"
 
     type_code = "00" #지정가
@@ -1226,15 +1226,15 @@ def CheckPossibleBuyInfo(stockcode, price, type):
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "PDNO" : stockcode,
         "ORD_UNPR": str(PriceAdjust(price,stockcode)),
         "ORD_DVSN": type_code,
@@ -1269,7 +1269,7 @@ def AdjustPossibleAmt(stockcode, amt ,type):
     data = None
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
             
         data = CheckPossibleBuyInfoIRP(stockcode,NowPrice,type)
     else:
@@ -1297,7 +1297,7 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
     time.sleep(0.2)
 
     PATH = "uapi/domestic-stock/v1/trading/pension/inquire-psbl-order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "TTTC0503R"
 
@@ -1310,15 +1310,15 @@ def CheckPossibleBuyInfoIRP(stockcode, price, type):
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "PDNO" : stockcode,
         "ORD_UNPR": str(PriceAdjust(price,stockcode)),
         "ORD_DVSN": type_code,
@@ -1360,7 +1360,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     time.sleep(0.2)
     
     TrId = "TTTC8001R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTC8001R"
 
     sell_buy_code = "00"
@@ -1381,14 +1381,14 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
 
     PATH = "uapi/domestic-stock/v1/trading/inquire-daily-ccld"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
-        "INQR_STRT_DT": Common.GetFromNowDateStr("KR","NONE", -limit),
-        "INQR_END_DT": Common.GetNowDateStr("KR"),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
+        "INQR_STRT_DT": common.GetFromNowDateStr("KR","NONE", -limit),
+        "INQR_END_DT": common.GetNowDateStr("KR"),
         "SLL_BUY_DVSN_CD": sell_buy_code,
         "INQR_DVSN": "00",
         "PDNO": stockcode,
@@ -1404,12 +1404,12 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     }
     
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(params)
+        "hashkey" : common.GetHashKey(params)
     }
 
     res = requests.get(URL, headers=headers, params=params) 
@@ -1451,7 +1451,7 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
 
 
-            if Common.GetNowDateStr("KR") != order['ord_dt']: 
+            if common.GetNowDateStr("KR") != order['ord_dt']: 
                 OrderInfo["OrderSatus"] = "Close"     
 
 
@@ -1525,14 +1525,14 @@ def CancelModifyOrder(stockcode, order_num1 , order_num2 , order_amt , order_pri
 
 
     #퇴직연금(29) 반영
-    if int(Common.GetPrdtNo(Common.GetNowDist())) == 29:
+    if int(common.get_account_prd_no(common.get_now_dist())) == 29:
         return CancelModifyOrderIRP(stockcode, order_num1 , order_num2 , order_amt , order_price, mode,order_type, order_dist)
     else:
             
         time.sleep(0.2)
 
         TrId = "TTTC0803U"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTC0803U"
 
         order_type = "00"
@@ -1547,11 +1547,11 @@ def CancelModifyOrder(stockcode, order_num1 , order_num2 , order_amt , order_pri
 
 
         PATH = "uapi/domestic-stock/v1/trading/order-rvsecncl"
-        URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+        URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
         data = {
 
-            "CANO": Common.GetAccountNo(Common.GetNowDist()),
-            "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+            "CANO": common.get_account_no(common.get_now_dist()),
+            "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
             "KRX_FWDG_ORD_ORGNO": order_num1,
             "ORGN_ODNO": order_num2,
             "ORD_DVSN": order_type,
@@ -1562,12 +1562,12 @@ def CancelModifyOrder(stockcode, order_num1 , order_num2 , order_amt , order_pri
 
         }
         headers = {"Content-Type":"application/json", 
-            "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype":"P",
-            "hashkey" : Common.GetHashKey(data)
+            "hashkey" : common.GetHashKey(data)
         }
 
         res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1619,10 +1619,10 @@ def CancelModifyOrderIRP(stockcode, order_num1 , order_num2 , order_amt , order_
 
 
     PATH = "uapi/domestic-stock/v1/trading/order-pension"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "SLL_BUY_DVSN_CD" : order_dist,
         "SLL_TYPE" : "01",
         "ORD_DVSN": order_type,
@@ -1636,12 +1636,12 @@ def CancelModifyOrderIRP(stockcode, order_num1 , order_num2 , order_amt , order_
         "ACCA_DVSN_CD" : "01"
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
     res = requests.post(URL, headers=headers, data=json.dumps(data))
 
@@ -1709,7 +1709,7 @@ def GetOhlcv(stock_code,p_code, adj_ok = "1"):
     time.sleep(0.2)
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     FID_ORG_ADJ_PRC = "0"
     if adj_ok == "1":
@@ -1720,16 +1720,16 @@ def GetOhlcv(stock_code,p_code, adj_ok = "1"):
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"FHKST03010100"}
 
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_DATE_1": Common.GetFromNowDateStr("KR","NONE",-36500),
-        "FID_INPUT_DATE_2": Common.GetNowDateStr("KR"),
+        "FID_INPUT_DATE_1": common.GetFromNowDateStr("KR","NONE",-36500),
+        "FID_INPUT_DATE_2": common.GetNowDateStr("KR"),
         "FID_PERIOD_DIV_CODE": p_code,
         "FID_ORG_ADJ_PRC": FID_ORG_ADJ_PRC
     }
@@ -1796,7 +1796,7 @@ def GetOhlcvNew(stock_code,p_code,get_count, adj_ok = "1"):
 
 
     PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     FID_ORG_ADJ_PRC = "0"
     if adj_ok == "1":
@@ -1813,8 +1813,8 @@ def GetOhlcvNew(stock_code,p_code,get_count, adj_ok = "1"):
     count = 0
  
 
-    now_date = Common.GetNowDateStr("KR")
-    date_str_start = Common.GetFromDateStr(pd.to_datetime(now_date),"NONE",-100)
+    now_date = common.GetNowDateStr("KR")
+    date_str_start = common.GetFromDateStr(pd.to_datetime(now_date),"NONE",-100)
     date_str_end = now_date
 
     while DataLoad:
@@ -1831,9 +1831,9 @@ def GetOhlcvNew(stock_code,p_code,get_count, adj_ok = "1"):
 
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id":"FHKST03010100"}
 
         params = {
@@ -1905,7 +1905,7 @@ def GetOhlcvNew(stock_code,p_code,get_count, adj_ok = "1"):
             if add_cnt == 0:
                 DataLoad = False
             else:
-                date_str_start = Common.GetFromDateStr(pd.to_datetime(date_str_end),"NONE",-100) 
+                date_str_start = common.GetFromDateStr(pd.to_datetime(date_str_end),"NONE",-100) 
 
         else:
             print("Error Code : " + str(res.status_code) + " | " + res.text)
@@ -1985,7 +1985,7 @@ def GetETF_Nav(stock_code,Log = "N"):
         try:
 
                     
-            df = stock.get_etf_price_deviation(Common.GetFromNowDateStr("KR","NONE", -5), Common.GetNowDateStr("KR"), stock_code)
+            df = stock.get_etf_price_deviation(common.GetFromNowDateStr("KR","NONE", -5), common.GetNowDateStr("KR"), stock_code)
 
 
             if Log == 'Y':
@@ -2016,7 +2016,7 @@ def GetETFGapAvg(stock_code, Log = "N"):
 
     #pykrx 모듈 통해서 괴리율 평균을 구해옴!!!
     try:
-        df = stock.get_etf_price_deviation(Common.GetFromNowDateStr("KR","NONE", -120), Common.GetNowDateStr("KR"), stock_code)
+        df = stock.get_etf_price_deviation(common.GetFromNowDateStr("KR","NONE", -120), common.GetNowDateStr("KR"), stock_code)
         if Log == 'Y':
             pprint.pprint(df)
         if len(df) == 0:

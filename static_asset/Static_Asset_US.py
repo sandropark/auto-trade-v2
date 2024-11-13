@@ -29,11 +29,11 @@ import line_alert
 
 
 #계좌 선택.. "VIRTUAL" 는 모의 계좌!
-Common.SetChangeMode("VIRTUAL") #REAL or VIRTUAL
+Common.set_change_mode("VIRTUAL") #REAL or VIRTUAL
 
 
 
-BOT_NAME = Common.GetNowDist() + "_MyStaticAssetBotUS"
+BOT_NAME = Common.get_now_dist() + "_MyStaticAssetBotUS"
 
 #시간 정보를 읽는다
 time_info = time.gmtime()

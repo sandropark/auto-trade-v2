@@ -14,7 +14,7 @@ https://drive.google.com/drive/folders/1mKGGR355vmBCxB7A3sOOSh8-gQs1CiMF?usp=dri
 변경될 일은 거의 없지만 만의 하나 변경이 이후 생긴다면 수정본은 
 맨 마지막 Outro-2 강의 수업자료에 먼저 반영되니 그 코드를 최종본이라 생각하고 받으시면 됩니다.
 
-공통 모듈 중 KIS_Common.py만 클래스 진행하시면 계속 내용이 추가 수정 되며 Outro-2에 최종본이라고 생각하시면 되는데
+공통 모듈 중 kis_common.py만 클래스 진행하시면 계속 내용이 추가 수정 되며 Outro-2에 최종본이라고 생각하시면 되는데
 다계좌매매를 위해서는 챕터8을 수강하셔서 자신만의 계좌상황에 맞게 수정해야 합니다.
 
 하다가 잘 안되시면 계속 내용이 추가되고 있는 아래 FAQ를 꼭꼭 체크하시고
@@ -33,7 +33,7 @@ https://blog.naver.com/zacra
 
 '''
 
-import KIS_Common as Common
+from common import kis_common as common
 import requests
 import json
 from datetime import datetime
@@ -163,24 +163,24 @@ def GetExrt():
     time.sleep(0.2)
     
     PATH = "/uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "CTRP6504R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTRP6504R"
 
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "WCRC_FRCR_DVSN_CD" : "02",
         'NATN_CD': '840', 
         'TR_MKET_CD': '00', 
@@ -216,13 +216,13 @@ def GetDayOrNight():
     time.sleep(0.2)
     
     PATH = "uapi/overseas-stock/v1/trading/dayornight"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"JTTT3010R"}
 
     params = {
@@ -246,24 +246,24 @@ def GetBalance(st = "USD"):
     time.sleep(0.2)
     
     PATH = "uapi/overseas-stock/v1/trading/inquire-present-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "CTRP6504R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTRP6504R"
 
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "WCRC_FRCR_DVSN_CD" : "02",
         'NATN_CD': '840', 
         'TR_MKET_CD': '00', 
@@ -314,7 +314,7 @@ def GetBalance(st = "USD"):
             result = res.json()['output3']
 
             #임시로 모의 계좌 잔고가 0으로 
-            if Common.GetNowDist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
+            if common.get_now_dist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
 
                 #주식 총 평가 금액
                 balanceDict['StockMoney'] = StockNowMoneyTotal#(float(result['evlu_amt_smtl_amt']) / float(Rate))
@@ -356,7 +356,7 @@ def GetBalance(st = "USD"):
             result = res.json()['output3']
 
             #임시로 모의 계좌 잔고가 0으로 나오면 
-            if Common.GetNowDist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
+            if common.get_now_dist() == "VIRTUAL" and float(balanceDict['RemainMoney']) == 0:
                 
 
   
@@ -394,7 +394,7 @@ def GetMyStockList(st = "USD"):
 
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-balance"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
 
     StockList = list()
@@ -414,13 +414,13 @@ def GetMyStockList(st = "USD"):
 
 
         TrId = "TTTS3012R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTS3012R"
 
         '''
         if GetDayOrNight() == 'N':
             TrId = "TTTS3012R"
-            if Common.GetNowDist() == "VIRTUAL":
+            if common.get_now_dist() == "VIRTUAL":
                 TrId = "VTTS3012R"
         '''
 
@@ -443,16 +443,16 @@ def GetMyStockList(st = "USD"):
                     
             # 헤더 설정
             headers = {"Content-Type":"application/json", 
-                    "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                    "appKey":Common.GetAppKey(Common.GetNowDist()),
-                    "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                    "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                    "appKey":common.get_app_key(common.get_now_dist()),
+                    "appSecret":common.get_app_secret(common.get_now_dist()),
                     "tr_id": TrId,
                     "tr_cont": tr_cont,
                     "custtype": "P"}
 
             params = {
-                "CANO": Common.GetAccountNo(Common.GetNowDist()),
-                "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+                "CANO": common.get_account_no(common.get_now_dist()),
+                "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
                 "OVRS_EXCG_CD" : try_market,
                 "TR_CRCY_CD": "USD",
                 "CTX_AREA_FK200" : FKKey,
@@ -567,15 +567,15 @@ def GetCurrentPriceOri(market, stock_code):
     time.sleep(0.2)
     
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
 
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"HHDFS00000300"}
 
     params = {
@@ -601,7 +601,7 @@ def GetCurrentPrice(stock_code):
     time.sleep(0.2)
     
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     for i in range(1,4):
 
@@ -619,9 +619,9 @@ def GetCurrentPrice(stock_code):
 
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id":"HHDFS00000300"}
 
         params = {
@@ -662,7 +662,7 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt = False):
     if adjustAmt == True:
         try:
             #가상 계좌는 미지원
-            if Common.GetNowDist() != "VIRTUAL":
+            if common.get_now_dist() != "VIRTUAL":
                 #매수 가능한수량으로 보정
                 amt = AdjustPossibleAmt(stockcode, amt)
 
@@ -675,16 +675,16 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt = False):
     time.sleep(0.2)
 
     TrId = "JTTT1002U"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTT1002U"
 
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
 
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -694,12 +694,12 @@ def MakeBuyLimitOrderOri(stockcode, amt, price, market, adjustAmt = False):
 
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
 
     
@@ -729,17 +729,17 @@ def MakeSellLimitOrderOri(stockcode, amt, price, market):
     time.sleep(0.2)
 
     TrId = "JTTT1006U"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTT1001U"
 
 
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
 
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -749,12 +749,12 @@ def MakeSellLimitOrderOri(stockcode, amt, price, market):
 
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -785,7 +785,7 @@ def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
     if adjustAmt == True:
         try:
             #가상 계좌는 미지원
-            if Common.GetNowDist() != "VIRTUAL":
+            if common.get_now_dist() != "VIRTUAL":
                 #매수 가능한수량으로 보정
                 amt = AdjustPossibleAmt(stockcode, amt)
 
@@ -799,17 +799,17 @@ def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
     time.sleep(0.2)
     
     TrId = "JTTT1002U"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTT1002U"
 
     market = GetMarketCodeUS(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
 
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -819,12 +819,12 @@ def MakeBuyLimitOrder(stockcode, amt, price ,adjustAmt = False):
 
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
 
     
@@ -857,18 +857,18 @@ def MakeSellLimitOrder(stockcode, amt, price):
     time.sleep(0.2)
     
     TrId = "JTTT1006U"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTT1001U"
 
 
     market = GetMarketCodeUS(stockcode)
 
     PATH = "uapi/overseas-stock/v1/trading/order"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
 
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD": market,
         "PDNO": stockcode,
         "ORD_DVSN": "00",
@@ -878,12 +878,12 @@ def MakeSellLimitOrder(stockcode, amt, price):
 
     }
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -912,7 +912,7 @@ def GetMarketCodeUS(stock_code, return_ori_market = False):
     time.sleep(0.2)
         
     PATH = "uapi/overseas-price/v1/quotations/price"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     for i in range(1,4):
 
@@ -930,9 +930,9 @@ def GetMarketCodeUS(stock_code, return_ori_market = False):
 
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id":"HHDFS00000300"}
 
         params = {
@@ -993,7 +993,7 @@ def CheckPossibleBuyInfo(stockcode, price):
     time.sleep(0.2)
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-psamount"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     TrId = "TTTS3007R"
     '''
@@ -1006,15 +1006,15 @@ def CheckPossibleBuyInfo(stockcode, price):
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id": TrId,
             "custtype": "P"}
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD" : Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD" : common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD" : market,
         "OVRS_ORD_UNPR": str(PriceAdjust(price)),
         "ITEM_CD" : stockcode
@@ -1070,13 +1070,13 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     time.sleep(0.2)
     
     TrId = "TTTS3035R"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTS3035R" # VTTT3001R #야간은 미지원...으앙! 어쩌라공~~
 
     '''
     if GetDayOrNight() == 'N':
         TrId = "TTTS3035R"
-        if Common.GetNowDist() == "VIRTUAL":
+        if common.get_now_dist() == "VIRTUAL":
             TrId = "VTTS3035R"
     '''
 
@@ -1098,16 +1098,16 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
 
     PATH = "uapi/overseas-stock/v1/trading/inquire-ccnl"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     
     print("stockcode - >" , stockcode)
 
     params = {
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "PDNO": stockcode,
-        "ORD_STRT_DT": Common.GetFromNowDateStr("US","NONE", -limit),
-        "ORD_END_DT": Common.GetNowDateStr("US"),
+        "ORD_STRT_DT": common.GetFromNowDateStr("US","NONE", -limit),
+        "ORD_END_DT": common.GetNowDateStr("US"),
         "SLL_BUY_DVSN": sell_buy_code,
         "CCLD_NCCS_DVSN": status_code,
         "OVRS_EXCG_CD": "",
@@ -1121,12 +1121,12 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
     }
     
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(params)
+        "hashkey" : common.GetHashKey(params)
     }
 
     res = requests.get(URL, headers=headers, params=params) 
@@ -1167,9 +1167,9 @@ def GetOrderList(stockcode = "", side = "ALL", status = "ALL", limit = 5):
 
             '''
             #주문정보 날짜가 다르다.
-            if Common.GetNowDateStr("KR") != order['ord_dt']: 
+            if common.GetNowDateStr("KR") != order['ord_dt']: 
                 #그런데 전날이다!
-                if Common.GetFromNowDateStr("KR","NONE",-1) == order['ord_dt']:
+                if common.GetFromNowDateStr("KR","NONE",-1) == order['ord_dt']:
                     if int(order['ord_tmd']) < 203000: #10시30분00초 보다 작다
                         OrderInfo["OrderSatus"] = "Close"     
                 else:
@@ -1257,7 +1257,7 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
     time.sleep(0.2)
     
     TrId = "JTTT1004U"
-    if Common.GetNowDist() == "VIRTUAL":
+    if common.get_now_dist() == "VIRTUAL":
          TrId = "VTTT1004U"
 
 
@@ -1269,11 +1269,11 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
 
 
     PATH = "uapi/overseas-stock/v1/trading/order-rvsecncl"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
     data = {
 
-        "CANO": Common.GetAccountNo(Common.GetNowDist()),
-        "ACNT_PRDT_CD": Common.GetPrdtNo(Common.GetNowDist()),
+        "CANO": common.get_account_no(common.get_now_dist()),
+        "ACNT_PRDT_CD": common.get_account_prd_no(common.get_now_dist()),
         "OVRS_EXCG_CD": market.upper(),
         "PDNO" : stockcode,
         "ORGN_ODNO": str(order_num),
@@ -1286,12 +1286,12 @@ def CancelModifyOrder(stockcode, order_num , order_amt , order_price, mode = "CA
     #pprint.pprint(data)
 
     headers = {"Content-Type":"application/json", 
-        "authorization":f"Bearer {Common.GetToken(Common.GetNowDist())}",
-        "appKey":Common.GetAppKey(Common.GetNowDist()),
-        "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+        "authorization":f"Bearer {common.get_token(common.get_now_dist())}",
+        "appKey":common.get_app_key(common.get_now_dist()),
+        "appSecret":common.get_app_secret(common.get_now_dist()),
         "tr_id": TrId,
         "custtype":"P",
-        "hashkey" : Common.GetHashKey(data)
+        "hashkey" : common.GetHashKey(data)
     }
 
     res = requests.post(URL, headers=headers, data=json.dumps(data))
@@ -1336,7 +1336,7 @@ def GetOhlcv(stock_code, p_code, adj_ok = "1"):
     time.sleep(0.2)
     
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     gubun = 0
     if p_code == 'W':
@@ -1346,13 +1346,13 @@ def GetOhlcv(stock_code, p_code, adj_ok = "1"):
 
     # 헤더 설정
     headers = {"Content-Type":"application/json", 
-            "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-            "appKey":Common.GetAppKey(Common.GetNowDist()),
-            "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+            "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+            "appKey":common.get_app_key(common.get_now_dist()),
+            "appSecret":common.get_app_secret(common.get_now_dist()),
             "tr_id":"HHDFS76240000"
             }
 
-    date_str = Common.GetNowDateStr("US")
+    date_str = common.GetNowDateStr("US")
     
     params = {
         "AUTH": "",
@@ -1428,7 +1428,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
 
     
     PATH = "/uapi/overseas-price/v1/quotations/dailyprice"
-    URL = f"{Common.GetUrlBase(Common.GetNowDist())}/{PATH}"
+    URL = f"{common.get_url_base(common.get_now_dist())}/{PATH}"
 
     gubun = 0
     if p_code == 'W':
@@ -1447,7 +1447,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
     count = 0
     request_count = 0
 
-    date_str = Common.GetNowDateStr("US")
+    date_str = common.GetNowDateStr("US")
 
 
 
@@ -1462,9 +1462,9 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
             
         # 헤더 설정
         headers = {"Content-Type":"application/json", 
-                "authorization": f"Bearer {Common.GetToken(Common.GetNowDist())}",
-                "appKey":Common.GetAppKey(Common.GetNowDist()),
-                "appSecret":Common.GetAppSecret(Common.GetNowDist()),
+                "authorization": f"Bearer {common.get_token(common.get_now_dist())}",
+                "appKey":common.get_app_key(common.get_now_dist()),
+                "appSecret":common.get_app_secret(common.get_now_dist()),
                 "tr_id":"HHDFS76240000",
                 "tr_cont": tr_cont
                 }
@@ -1473,7 +1473,7 @@ def GetOhlcvNew(stock_code, p_code, get_count, adj_ok = "1"):
         
 
         #if request_count > 0:
-        #    date_str = Common.GetFromNowDateStr("US","NONE",-150*request_count)
+        #    date_str = common.GetFromNowDateStr("US","NONE",-150*request_count)
 
         
         params = {
