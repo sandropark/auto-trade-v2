@@ -10,22 +10,11 @@ from common.env_type import EnvType
 # 통합증거금을 사용하시는 분은 강의 영상을 잘 봐주세요!!
 
 # REAL 실계좌 VIRTUAL 모의 계좌
-# common.set_change_mode("REAL")
+common.set_change_mode(EnvType.V)
+# common.make_token()
+dict = kis_kr.get_balance()
+print(dict)
 
-
-# 현재 장이 열렸는지 여부
-# if kis_us.is_market_open() == True:
-#     print("Maket is Open!!")
-# else:
-#     print("Maket is Closed!!")
-
-# common.set_change_mode(EnvType.V)
-
-# print(common.get_now_dist())
-
-# print(common.get_app_key())
-
-# print(common.get_token())
 """
 
 print("                                     ")

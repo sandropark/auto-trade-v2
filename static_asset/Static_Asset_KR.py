@@ -24,11 +24,12 @@ import time
 import json
 import pprint
 
+from common.env_type import EnvType
 import line_alert
 
 
-# 계좌 선택.. "VIRTUAL" 는 모의 계좌!
-common.set_change_mode("VIRTUAL")  # REAL or VIRTUAL
+# 계좌 선택.. EnvType.V 는 모의 계좌!
+common.set_change_mode(EnvType.V)  # REAL or VIRTUAL
 
 
 BOT_NAME = common.get_now_dist() + "_MyStaticAssetBotKR"

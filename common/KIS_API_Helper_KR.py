@@ -44,6 +44,8 @@ import time
 import pandas as pd
 from pykrx import stock
 
+from common.env_type import EnvType
+
 
 # 오늘 개장일인지 조회! (휴장일이면 'N'을 리턴!)
 def is_today_open_check():
@@ -115,11 +117,11 @@ def is_market_open():
         NowDist = common.get_now_dist()
         try:
             # 가상 계좌면 메세지 통일을 위해 실계좌에서 가짜 주문 취소 주문을 넣는다!
-            if common.get_now_dist() == "VIRTUAL":
+            if common.get_now_dist() == EnvType.V:
 
-                common.set_change_mode("REAL")
+                common.set_change_mode(EnvType.R)
                 result = make_sell_limit_order("069500", 1, 1, "CHECK")
-                common.set_change_mode("VIRTUAL")
+                common.set_change_mode(EnvType.V)
 
             else:
                 result = make_sell_limit_order("069500", 1, 1, "CHECK")
@@ -189,20 +191,19 @@ def price_adjust(price, stock_code):
 
 
 # 나의 계좌 잔고!
-def get_balance():
+def get_balance() -> dict:
 
     # 퇴직연금(29) 반영
     if int(common.get_account_prd_no()) == 29:
         return get_balance_IRP()
     else:
-
         time.sleep(0.2)
 
         PATH = "uapi/domestic-stock/v1/trading/inquire-balance"
         URL = f"{common.get_url_base()}/{PATH}"
 
         TrId = "TTTC8434R"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC8434R"
 
         # 헤더 설정
@@ -281,7 +282,7 @@ def get_balance_IRP():
     URL = f"{common.get_url_base()}/{PATH}"
 
     TrId = "TTTC8434R"
-    if common.get_now_dist() == "VIRTUAL":
+    if common.get_now_dist() == EnvType.V:
         TrId = "VTTC8434R"
 
     # 헤더 설정
@@ -350,7 +351,7 @@ def get_my_stock_list():
     URL = f"{common.get_url_base()}/{PATH}"
 
     TrId = "TTTC8434R"
-    if common.get_now_dist() == "VIRTUAL":
+    if common.get_now_dist() == EnvType.V:
         TrId = "VTTC8434R"
 
     StockList = list()
@@ -659,7 +660,7 @@ def make_buy_market_order(stockcode, amt, adjustAmt=False):
         time.sleep(0.2)
 
         TrId = "TTTC0802U"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC0802U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
@@ -714,7 +715,7 @@ def make_sell_market_order(stockcode, amt):
         time.sleep(0.2)
 
         TrId = "TTTC0801U"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC0801U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
@@ -778,7 +779,7 @@ def make_buy_limit_order(stockcode, amt, price, adjustAmt=False, ErrLog="NO"):
         time.sleep(0.2)
 
         TrId = "TTTC0802U"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC0802U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
@@ -835,7 +836,7 @@ def make_sell_limit_order(stockcode, amt, price, ErrLog="YES"):
     else:
 
         TrId = "TTTC0801U"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC0801U"
 
         PATH = "uapi/domestic-stock/v1/trading/order-cash"
@@ -1130,7 +1131,7 @@ def check_possible_buy_info(stockcode, price, type):
     URL = f"{common.get_url_base()}/{PATH}"
 
     TrId = "TTTC8908R"
-    if common.get_now_dist() == "VIRTUAL":
+    if common.get_now_dist() == EnvType.V:
         TrId = "VTTC8908R"
 
     type_code = "00"  # 지정가
@@ -1264,7 +1265,7 @@ def get_order_list(stockcode="", side="ALL", status="ALL", limit=5):
     time.sleep(0.2)
 
     TrId = "TTTC8001R"
-    if common.get_now_dist() == "VIRTUAL":
+    if common.get_now_dist() == EnvType.V:
         TrId = "VTTC8001R"
 
     sell_buy_code = "00"
@@ -1446,7 +1447,7 @@ def cancel_modify_order(
         time.sleep(0.2)
 
         TrId = "TTTC0803U"
-        if common.get_now_dist() == "VIRTUAL":
+        if common.get_now_dist() == EnvType.V:
             TrId = "VTTC0803U"
 
         order_type = "00"

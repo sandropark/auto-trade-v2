@@ -18,6 +18,7 @@ https://blog.naver.com/zacra/223086628069
 
   
 """
+from common.env_type import EnvType
 from ..common import KIS_Common as common
 from ..common import KIS_API_Helper_US as KisUS
 import time
@@ -27,8 +28,8 @@ import pprint
 import line_alert
 
 
-# 계좌 선택.. "VIRTUAL" 는 모의 계좌!
-common.set_change_mode("VIRTUAL")  # REAL or VIRTUAL
+# 계좌 선택.. EnvType.V 는 모의 계좌!
+common.set_change_mode(EnvType.V)  # REAL or VIRTUAL
 
 
 BOT_NAME = common.get_now_dist() + "_MyGTAA5BotUS"
