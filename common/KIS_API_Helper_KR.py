@@ -244,20 +244,20 @@ def get_balance():
             balanceDict["StockRevenue"] = float(result["evlu_pfls_smtl_amt"])
 
             # 총 평가 금액
-            balanceDict["TotalMoney"] = float(result["tot_evlu_amt"])
+            balanceDict["total_money"] = float(result["tot_evlu_amt"])
 
             # 예수금이 아예 0이거나 총평가금액이랑 주식평가금액이 같은 상황일때는.. 좀 이상한 특이사항이다 풀매수하더라도 1원이라도 남을 테니깐
             # 퇴직연금 계좌에서 tot_evlu_amt가 제대로 반영이 안되는 경우가 있는데..이때는 전일 총평가금액을 가져오도록 한다!
             if (
                 float(result["dnca_tot_amt"]) == 0
-                or balanceDict["TotalMoney"] == balanceDict["StockMoney"]
+                or balanceDict["total_money"] == balanceDict["StockMoney"]
             ):
                 # 장이 안열린 상황을 가정
                 # if is_market_open() == False:
-                balanceDict["TotalMoney"] = float(result["bfdy_tot_asst_evlu_amt"])
+                balanceDict["total_money"] = float(result["bfdy_tot_asst_evlu_amt"])
 
             # 예수금 총금액 (즉 주문가능현금)
-            balanceDict["RemainMoney"] = float(balanceDict["TotalMoney"]) - float(
+            balanceDict["RemainMoney"] = float(balanceDict["total_money"]) - float(
                 balanceDict["StockMoney"]
             )  # result['dnca_tot_amt']
 
@@ -329,10 +329,10 @@ def get_balance_IRP():
         # 예수금 총금액 (즉 주문가능현금)
         balanceDict["RemainMoney"] = float(
             Data["RemainMoney"]
-        )  # float(balanceDict['TotalMoney']) - float(balanceDict['StockMoney'])
+        )  # float(balanceDict['total_money']) - float(balanceDict['StockMoney'])
 
         # 총 평가 금액
-        balanceDict["TotalMoney"] = (
+        balanceDict["total_money"] = (
             balanceDict["StockMoney"] + balanceDict["RemainMoney"]
         )
 
@@ -428,20 +428,20 @@ def get_my_stock_list():
 
                     StockInfo = dict()
 
-                    StockInfo["StockCode"] = stock["pdno"]
-                    StockInfo["StockName"] = stock["prdt_name"]
-                    StockInfo["StockAmt"] = stock["hldg_qty"]
-                    StockInfo["StockAvgPrice"] = stock["pchs_avg_pric"]
+                    StockInfo["stock_code"] = stock["pdno"]
+                    StockInfo["stock_name"] = stock["prdt_name"]
+                    StockInfo["stock_amt"] = stock["hldg_qty"]
+                    StockInfo["stock_avg_price"] = stock["pchs_avg_pric"]
                     StockInfo["StockOriMoney"] = stock["pchs_amt"]
-                    StockInfo["StockNowMoney"] = stock["evlu_amt"]
+                    StockInfo["stock_now_money"] = stock["evlu_amt"]
                     StockInfo["StockNowPrice"] = stock["prpr"]
                     # StockInfo["StockNowRate"] = stock['fltt_rt'] #등락률인데 해외 주식에는 없어서 통일성을 위해 여기도 없앰 ㅎ
-                    StockInfo["StockRevenueRate"] = stock["evlu_pfls_rt"]
-                    StockInfo["StockRevenueMoney"] = stock["evlu_pfls_amt"]
+                    StockInfo["stock_revenue_rate"] = stock["evlu_pfls_rt"]
+                    StockInfo["stock_revenue_money"] = stock["evlu_pfls_amt"]
 
                     Is_Duple = False
                     for exist_stock in StockList:
-                        if exist_stock["StockCode"] == StockInfo["StockCode"]:
+                        if exist_stock["stock_code"] == StockInfo["stock_code"]:
                             Is_Duple = True
                             break
 
@@ -589,8 +589,8 @@ def get_current_status(stock_code):
         # pprint.pprint(result)
 
         stockDataDict = dict()
-        stockDataDict["StockCode"] = stock_code
-        stockDataDict["StockName"] = get_stock_name(stock_code)
+        stockDataDict["stock_code"] = stock_code
+        stockDataDict["stock_name"] = get_stock_name(stock_code)
         stockDataDict["StockNowPrice"] = int(result["stck_prpr"])
         stockDataDict["StockMarket"] = result[
             "rprs_mrkt_kor_name"
@@ -887,7 +887,7 @@ def sell_all_stock():
     # 시장가로 모두 매도 한다
     for stock_info in StockList:
         pprint.pprint(
-            make_sell_market_order(stock_info["StockCode"], stock_info["StockAmt"])
+            make_sell_market_order(stock_info["stock_code"], stock_info["stock_amt"])
         )
 
 
@@ -1109,7 +1109,9 @@ def sell_all_stock_IRP():
     # 시장가로 모두 매도 한다
     for stock_info in StockList:
         pprint.pprint(
-            make_sell_market_order_IRP(stock_info["StockCode"], stock_info["StockAmt"])
+            make_sell_market_order_IRP(
+                stock_info["stock_code"], stock_info["stock_amt"]
+            )
         )
 
 

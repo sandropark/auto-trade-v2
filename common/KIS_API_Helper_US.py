@@ -274,15 +274,15 @@ def get_balance(st="USD"):
         result = res.json()["output2"]
 
         # 실시간 주식 상태가 반영이 안되서 주식 정보를 직접 읽어서 계산!
-        MyStockList = get_my_stock_list(st)
+        my_stock_list = get_my_stock_list(st)
 
         StockOriMoneyTotal = 0
         StockNowMoneyTotal = 0
 
-        for stock in MyStockList:
+        for stock in my_stock_list:
             # pprint.pprint(stock)
             StockOriMoneyTotal += float(stock["StockOriMoney"])
-            StockNowMoneyTotal += float(stock["StockNowMoney"])
+            StockNowMoneyTotal += float(stock["stock_now_money"])
 
             # print("--", StockNowMoneyTotal, StockOriMoneyTotal)
 
@@ -326,7 +326,7 @@ def get_balance(st="USD"):
                 )
 
                 # 총 평가 금액
-                balanceDict["TotalMoney"] = float(balanceDict["StockMoney"]) + float(
+                balanceDict["total_money"] = float(balanceDict["StockMoney"]) + float(
                     balanceDict["RemainMoney"]
                 )
 
@@ -342,7 +342,7 @@ def get_balance(st="USD"):
                 )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
                 # 총 평가 금액
-                balanceDict["TotalMoney"] = float(balanceDict["StockMoney"]) + float(
+                balanceDict["total_money"] = float(balanceDict["StockMoney"]) + float(
                     balanceDict["RemainMoney"]
                 )
 
@@ -383,7 +383,7 @@ def get_balance(st="USD"):
                 balanceDict["RemainMoney"] = float(result["frcr_evlu_tota"])
 
                 # 총 평가 금액
-                balanceDict["TotalMoney"] = float(balanceDict["StockMoney"]) + float(
+                balanceDict["total_money"] = float(balanceDict["StockMoney"]) + float(
                     balanceDict["RemainMoney"]
                 )
 
@@ -399,7 +399,7 @@ def get_balance(st="USD"):
                 )  # round((float(StockNowMoneyTotal)/float(StockOriMoneyTotal) - 1.0) * 100.0,2)
 
                 # 총 평가 금액
-                balanceDict["TotalMoney"] = float(balanceDict["StockMoney"]) + float(
+                balanceDict["total_money"] = float(balanceDict["StockMoney"]) + float(
                     balanceDict["RemainMoney"]
                 )
 
@@ -509,44 +509,46 @@ def get_my_stock_list(st="USD"):
 
                         StockInfo = dict()
 
-                        StockInfo["StockCode"] = stock["ovrs_pdno"]
-                        StockInfo["StockName"] = stock["ovrs_item_name"]
-                        StockInfo["StockAmt"] = stock["ovrs_cblc_qty"]
+                        StockInfo["stock_code"] = stock["ovrs_pdno"]
+                        StockInfo["stock_name"] = stock["ovrs_item_name"]
+                        StockInfo["stock_amt"] = stock["ovrs_cblc_qty"]
 
                         if st == "USD":
 
-                            StockInfo["StockAvgPrice"] = stock["pchs_avg_pric"]
+                            StockInfo["stock_avg_price"] = stock["pchs_avg_pric"]
                             StockInfo["StockOriMoney"] = stock["frcr_pchs_amt1"]
-                            StockInfo["StockNowMoney"] = stock["ovrs_stck_evlu_amt"]
+                            StockInfo["stock_now_money"] = stock["ovrs_stck_evlu_amt"]
                             StockInfo["StockNowPrice"] = stock["now_pric2"]
-                            StockInfo["StockRevenueMoney"] = stock["frcr_evlu_pfls_amt"]
+                            StockInfo["stock_revenue_money"] = stock[
+                                "frcr_evlu_pfls_amt"
+                            ]
 
                         else:
 
                             time.sleep(0.2)
                             Rate = get_exrt()
 
-                            StockInfo["StockAvgPrice"] = float(
+                            StockInfo["stock_avg_price"] = float(
                                 stock["pchs_avg_pric"]
                             ) * float(Rate)
                             StockInfo["StockOriMoney"] = float(
                                 stock["frcr_pchs_amt1"]
                             ) * float(Rate)
-                            StockInfo["StockNowMoney"] = float(
+                            StockInfo["stock_now_money"] = float(
                                 stock["ovrs_stck_evlu_amt"]
                             ) * float(Rate)
                             StockInfo["StockNowPrice"] = float(
                                 stock["now_pric2"]
                             ) * float(Rate)
-                            StockInfo["StockRevenueMoney"] = float(
+                            StockInfo["stock_revenue_money"] = float(
                                 stock["frcr_evlu_pfls_amt"]
                             ) * float(Rate)
 
-                        StockInfo["StockRevenueRate"] = stock["evlu_pfls_rt"]
+                        StockInfo["stock_revenue_rate"] = stock["evlu_pfls_rt"]
 
                         Is_Duple = False
                         for exist_stock in StockList:
-                            if exist_stock["StockCode"] == StockInfo["StockCode"]:
+                            if exist_stock["stock_code"] == StockInfo["stock_code"]:
                                 Is_Duple = True
                                 break
 
@@ -957,9 +959,9 @@ def sell_all_stock():
     for stock_info in StockList:
         pprint.pprint(
             make_sell_limit_order(
-                stock_info["StockCode"],
-                stock_info["StockAmt"],
-                stock_info["StockAvgPrice"],
+                stock_info["stock_code"],
+                stock_info["stock_amt"],
+                stock_info["stock_avg_price"],
             )
         )
 

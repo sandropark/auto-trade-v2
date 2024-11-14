@@ -209,8 +209,8 @@ def get_balance_krw_total():
         float(kr_data["StockRevenue"]) + float(us_data["StockRevenue"])
     )
     # 총 평가 금액
-    balanceDict["TotalMoney"] = str(
-        float(kr_data["TotalMoney"]) + float(us_data["TotalMoney"])
+    balanceDict["total_money"] = str(
+        float(kr_data["total_money"]) + float(us_data["total_money"])
     )
 
     return balanceDict
