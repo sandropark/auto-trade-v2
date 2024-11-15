@@ -10,8 +10,8 @@ from common.env_type import EnvType
 # 통합증거금을 사용하시는 분은 강의 영상을 잘 봐주세요!!
 
 # REAL 실계좌 VIRTUAL 모의 계좌
-common.set_change_mode(EnvType.V)
-# common.make_token()
+# common.set_change_mode(EnvType.V)
+# common.get_token()
 dict = kis_kr.get_balance()
 print(dict)
 
